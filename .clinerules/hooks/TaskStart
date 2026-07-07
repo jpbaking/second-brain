@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Vault TaskStart hook — injects the secretary's situational awareness at
+the start of every task: inbox backlog, overdue reminders, pending ⚠ marks.
+Fail-open: any error returns {"cancel": false} so Cline is never blocked."""
+
+import datetime
+import json
+import os
+import re
+import sys
+
+
+def workspace_root(data):
+    for r in data.get("workspaceRoots") or []:
+        p = r.get("path") or r.get("uri") or "" if isinstance(r, dict) else str(r)
+        p = re.sub(r"^file://", "", p)
+        if p and os.path.isdir(p):
+            return p
+    return os.getcwd()
+
+
+def main():
+    try:
+        data = json.load(sys.stdin)
+    except Exception:
+        data = {}
+    lines = []
+    try:
+        root = workspace_root(data)
+        today = datetime.date.today()
+
+        inbox = os.path.join(root, "inbox")
+        backlog = [
+            f for f in (os.listdir(inbox) if os.path.isdir(inbox) else [])
+            if f != "README.md" and os.path.isfile(os.path.join(inbox, f))
+        ]
+        if backlog:
+            lines.append(
+                f"- inbox/ has {len(backlog)} unprocessed file(s): "
+                + ", ".join(sorted(backlog)[:5])
+                + (" …" if len(backlog) > 5 else "")
+                + " — offer to run the /inbox.md workflow."
+            )
+
+        overdue = []
+        for fname in ("reminders.md", "commitments.md"):
+            path = os.path.join(root, "memory", "notes", fname)
+            if not os.path.isfile(path):
+                continue
+            for line in open(path, encoding="utf-8"):
+                m = re.match(r"\s*- \[ \] (\d{4}-\d{2}-\d{2}) due:(.*)", line)
+                if m:
+                    try:
+                        if datetime.date.fromisoformat(m.group(1)) < today:
+                            overdue.append(f"{m.group(1)}:{m.group(2).strip()}")
+                    except ValueError:
+                        pass
+        if overdue:
+            lines.append(
+                f"- {len(overdue)} overdue reminder(s)/commitment(s): "
+                + "; ".join(overdue[:5])
+            )
+
+        marked = 0
+        mem = os.path.join(root, "memory")
+        for dirpath, _dirs, files in os.walk(mem):
+            for f in files:
+                if f.endswith(".md") and f != "log.md":
+                    try:
+                        if "⚠" in open(os.path.join(dirpath, f), encoding="utf-8").read():
+                            marked += 1
+                    except Exception:
+                        pass
+        if marked:
+            lines.append(f"- {marked} memory page(s) carry unresolved ⚠ markers.")
+    except Exception:
+        lines = []
+
+    out = {"cancel": False}
+    if lines:
+        out["contextModification"] = (
+            "[second-brain secretary briefing — surface these to the principal "
+            "when appropriate, do not act on them uninvited]\n" + "\n".join(lines[:12])
+        )
+    json.dump(out, sys.stdout)
+
+
+if __name__ == "__main__":
+    main()

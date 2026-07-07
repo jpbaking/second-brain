@@ -1,0 +1,9 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Cline/Claude local scratch (not part of the vault contract)
+.clinerules/.cache/

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{Report title}} — Second Brain</title>
+  <meta name="description" content="{{One plain sentence describing the report.}}">
+  <link rel="icon" href="../design/lazyway/assets/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../design/lazyway/assets/favicons/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="../design/lazyway/assets/favicons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../design/lazyway/styles.css">
+  <link rel="stylesheet" href="../design/lazyway/components.css">
+  <!-- guidance: interactive-responsive single page (dashboard shape). Fully
+       offline: kit + fonts are vendored under ../design/lazyway/. Tabs need
+       components.js; charts need charts.js. Printing flattens the tabs (all
+       panels shown, headed by their tab name) so Print → PDF captures
+       everything. The one amber element is the nav's .active link. -->
+  <style>
+    @media print {
+      .nav-wrap, .search-input, .no-print { display: none; }
+      .tab-list { display: none; }
+      .tab-panel[hidden] { display: block; }
+      .print-panel-title { display: block !important; }
+      .card, .stat, .table-wrap, .chart { break-inside: avoid; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    .print-panel-title { display: none; }
+  </style>
+</head>
+<body>
+
+  <header class="nav-wrap"><nav class="nav container">
+    <a href="#" class="brand"><img src="../design/lazyway/assets/logo-mark.svg" alt=""><span class="brand-name">Second Brain</span></a>
+    <ul class="nav-links" role="list">
+      <li><a href="#" class="nav-link active">{{Report title}}</a></li>
+      <li><button class="btn btn-quiet btn-sm" onclick="window.print()">Export as PDF</button></li>
+    </ul>
+  </nav></header>
+
+  <main class="container section">
+    <div class="section-head">
+      <div class="section-kicker">// {{Report type}} · {{YYYY-MM-DD}}</div>
+      <h1 class="section-title">{{Report title}}</h1>
+    </div>
+    <p class="lead">{{One or two muted sentences: scope and period.}}</p>
+
+    <!-- guidance: headline numbers; sparkline optional; ONE .stat-highlight max
+         (it costs nothing amber-wise but keep a single highlight). -->
+    <div class="grid-stats">
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div><div id="spark1"></div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+    </div>
+
+    <!-- guidance: tabs split the report's facets (e.g. Overview / People / Risks).
+         Panels print in sequence with their titles. -->
+    <div data-tabs class="section">
+      <div class="tab-list">
+        <button class="tab active" data-tab-target="#t-overview">Overview</button>
+        <button class="tab" data-tab-target="#t-detail">Detail</button>
+        <button class="tab" data-tab-target="#t-sources">Sources</button>
+      </div>
+
+      <div class="tab-panel" id="t-overview">
+        <h2 class="print-panel-title">Overview</h2>
+        <div class="grid-2">
+          <div class="chart">
+            <h3 class="chart-title">{{Chart title}}</h3>
+            <p class="chart-sub">{{What the chart shows.}}</p>
+            <div id="c1"></div>
+          </div>
+          <div class="chart">
+            <h3 class="chart-title">{{Chart title}}</h3>
+            <p class="chart-sub">{{What the chart shows.}}</p>
+            <div id="c2"></div>
+          </div>
+        </div>
+        <div class="prose section">
+          <p>{{Narrative summary with dated, vault-traceable claims.}}</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="t-detail" hidden>
+        <h2 class="print-panel-title">Detail</h2>
+        <div class="field no-print">
+          <input class="search-input" id="filter" placeholder="Filter rows…" aria-label="Filter table rows">
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="detail-table">
+            <thead><tr><th>Item</th><th>Status</th><th class="num">Value</th></tr></thead>
+            <tbody>
+              <tr><td>{{item}}</td><td><span class="badge badge-live">Live</span></td><td class="num">{{value}}</td></tr>
+              <tr><td>{{item}}</td><td><span class="badge badge-planned">Planned</span></td><td class="num">{{value}}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="t-sources" hidden>
+        <h2 class="print-panel-title">Sources</h2>
+        <div class="data-list">
+          <div class="data-row"><span class="data-key">{{memory page}}</span><span class="data-value">{{what it contributed}}</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="footer-inner container">
+    <div class="foot-brand"><img src="../design/lazyway/assets/logo-mark-invert.svg" alt=""><span class="foot-name">Second Brain</span></div>
+    <div class="foot-copy">Prepared by the secretary · {{YYYY-MM-DD}}</div>
+  </div></footer>
+
+  <script src="../design/lazyway/components.js"></script>
+  <script src="../design/lazyway/charts.js"></script>
+  <script>
+    // guidance: real series come from the vault; never pass colors; ≤5 series.
+    lwCharts.sparkline("#spark1", { values: [3, 5, 4, 7, 6, 8] });
+    lwCharts.line("#c1", { labels: ["{{Jan}}", "{{Feb}}", "{{Mar}}"], series: [{ name: "{{Series}}", values: [12, 18, 15] }], area: true });
+    lwCharts.donut("#c2", { slices: [{ label: "{{A}}", value: 41 }, { label: "{{B}}", value: 27 }], totalLabel: "total" });
+
+    // Client-side table filter (offline, no dependencies).
+    const filter = document.getElementById("filter");
+    if (filter) filter.addEventListener("input", () => {
+      const q = filter.value.toLowerCase();
+      document.querySelectorAll("#detail-table tbody tr").forEach((tr) => {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+      });
+    });
+
+    // Before printing, un-hide every tab panel; restore after.
+    const panels = [...document.querySelectorAll(".tab-panel")];
+    let hiddenBefore = [];
+    addEventListener("beforeprint", () => {
+      hiddenBefore = panels.filter((p) => p.hidden);
+      hiddenBefore.forEach((p) => (p.hidden = false));
+    });
+    addEventListener("afterprint", () => hiddenBefore.forEach((p) => (p.hidden = true)));
+  </script>
+</body>
+</html>

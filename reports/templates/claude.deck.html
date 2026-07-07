@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{Deck title}} — Second Brain</title>
+  <meta name="description" content="{{One plain sentence describing the deck.}}">
+  <link rel="stylesheet" href="../design/claude/styles.css">
+  <link rel="stylesheet" href="../design/claude/components.css">
+  <!-- guidance: "PowerPoint" replacement, claude kit. 16:9 slides at
+       PowerPoint's 13.333in × 7.5in. On screen: scroll-snap, arrow keys,
+       counter. The title slide is fixed warm-charcoal with terracotta accent
+       regardless of theme; content slides follow the theme (always light in
+       print). Export: Print → Save as PDF or scripts/export-pdf.sh. -->
+  <style>
+    html { scroll-snap-type: y mandatory; }
+    body { background: var(--surface); }
+    .slide {
+      box-sizing: border-box;
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      margin: 24px auto;
+      padding: 4.5% 6%;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      scroll-snap-align: center;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    /* fixed dark title slide — independent of theme */
+    .slide-cover {
+      background: #1F1E1D; border-color: #1F1E1D; color: #EDEBE4;
+    }
+    .slide-cover .display { color: #EDEBE4; }
+    .slide-cover .muted, .slide-cover .slide-foot { color: #A5A29A; }
+    .slide-cover .eyebrow { color: #D97757; }
+    .slide-title { font-size: 32px; margin: 0 0 12px; }
+    .slide-foot {
+      margin-top: auto; padding-top: 16px;
+      display: flex; justify-content: space-between;
+      font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+    }
+    .deck-counter {
+      position: fixed; right: 16px; bottom: 12px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+    }
+    .deck-toolbar { position: fixed; right: 16px; top: 16px; }
+    @page { size: 13.333in 7.5in; margin: 0; }
+    @media print {
+      html { scroll-snap-type: none; }
+      body { background: var(--panel); margin: 0; }
+      .slide {
+        width: 13.333in; height: 7.5in; aspect-ratio: auto;
+        margin: 0; border: 0; break-after: page;
+      }
+      .slide:last-of-type { break-after: auto; }
+      .deck-counter, .deck-toolbar { display: none; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-toolbar"><button class="theme-toggle" data-theme-toggle>☾ dark</button></div>
+
+  <!-- Slide 1 — cover (fixed charcoal) -->
+  <section class="slide slide-cover">
+    <div class="eyebrow">{{Deck type, e.g. Quarterly team review}}</div>
+    <h1 class="display" style="font-size: 46px;">{{Deck title}}</h1>
+    <p class="lead muted">{{One quiet subtitle line.}}</p>
+    <div class="slide-foot"><span>{{Author / team}}</span><span>{{YYYY-MM-DD}}</span></div>
+  </section>
+
+  <!-- Slide 2 — agenda -->
+  <section class="slide">
+    <div class="eyebrow">Agenda</div>
+    <h2 class="slide-title">What this covers</h2>
+    <div class="prose">
+      <ol>
+        <li>{{Point one}}</li>
+        <li>{{Point two}}</li>
+        <li>{{Point three}}</li>
+      </ol>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>2</span></div>
+  </section>
+
+  <!-- Slide 3 — stats -->
+  <section class="slide">
+    <div class="eyebrow">Headline numbers</div>
+    <h2 class="slide-title">{{Metric slide title}}</h2>
+    <div class="grid-stats">
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>3</span></div>
+  </section>
+
+  <!-- Slide 4 — chart. guidance: one chart per slide, no custom colors, ≤5 series. -->
+  <section class="slide">
+    <div class="eyebrow">Trend</div>
+    <h2 class="slide-title">{{Chart slide title}}</h2>
+    <div class="chart" style="border: 0; box-shadow: none; padding: 0;">
+      <div id="c1"></div>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>4</span></div>
+  </section>
+
+  <!-- Slide 5 — close -->
+  <section class="slide">
+    <div class="eyebrow">Next steps</div>
+    <h2 class="slide-title">Decisions needed</h2>
+    <div class="prose">
+      <ul>
+        <li>{{Ask one}}</li>
+        <li>{{Ask two}}</li>
+      </ul>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>5</span></div>
+  </section>
+
+  <div class="deck-counter" id="counter">1 / 1</div>
+
+  <script src="../design/claude/kit.js"></script>
+  <script src="../design/claude/charts.js"></script>
+  <script>
+    // guidance: replace with real series from the vault; delete if no chart
+    // slide. Keep charts inside window.renderCharts so theme toggle + print
+    // re-render them in the right palette.
+    window.renderCharts = function () {
+      lwCharts.bar("#c1", {
+        labels: ["{{Q1}}", "{{Q2}}", "{{Q3}}"],
+        series: [{ name: "{{Series}}", values: [40, 55, 48] }]
+      });
+    };
+    window.renderCharts();
+
+    const slides = [...document.querySelectorAll(".slide")];
+    const counter = document.getElementById("counter");
+    let current = 0;
+    function go(i) {
+      current = Math.max(0, Math.min(slides.length - 1, i));
+      slides[current].scrollIntoView({ behavior: "smooth" });
+    }
+    addEventListener("keydown", (e) => {
+      if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(current + 1); }
+      if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); go(current - 1); }
+    });
+    const seen = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          current = slides.indexOf(en.target);
+          counter.textContent = `${current + 1} / ${slides.length}`;
+        }
+      });
+    }, { threshold: 0.6 });
+    slides.forEach((s) => seen.observe(s));
+    counter.textContent = `1 / ${slides.length}`;
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{Report title}} — Second Brain</title>
+  <meta name="description" content="{{One plain sentence describing the report.}}">
+  <link rel="stylesheet" href="../design/claude/styles.css">
+  <link rel="stylesheet" href="../design/claude/components.css">
+  <!-- guidance: interactive-responsive single page, claude kit. Light/dark
+       follows the OS with a manual toggle (persisted); print is always light
+       and flattens the tabs so the PDF captures every panel. Fully offline —
+       system font stacks, no external requests. Charts live inside
+       window.renderCharts so the kit re-renders them per theme. -->
+  <style>
+    @media print {
+      .bar-actions, .search-input, .no-print { display: none; }
+      .tab-list { display: none; }
+      .tab-panel[hidden] { display: block; }
+      .print-panel-title { display: block !important; }
+      .card, .stat, .table-wrap, .chart { break-inside: avoid; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    .print-panel-title { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="bar">
+      <span class="bar-brand"><span class="brand-dot"></span>Second Brain</span>
+      <span class="bar-actions">
+        <button class="theme-toggle" data-theme-toggle>☾ dark</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">Export as PDF</button>
+      </span>
+    </header>
+
+    <main class="section">
+      <div class="eyebrow">{{Report type}} · {{YYYY-MM-DD}}</div>
+      <h1 class="display">{{Report title}}</h1>
+      <p class="lead">{{One or two muted sentences: scope and period.}}</p>
+
+      <div class="grid-stats section">
+        <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div><div id="spark1"></div></div>
+        <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+        <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+        <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      </div>
+
+      <div data-tabs class="section">
+        <div class="tab-list">
+          <button class="tab active" data-tab-target="#t-overview">Overview</button>
+          <button class="tab" data-tab-target="#t-detail">Detail</button>
+          <button class="tab" data-tab-target="#t-sources">Sources</button>
+        </div>
+
+        <div class="tab-panel" id="t-overview">
+          <h2 class="print-panel-title">Overview</h2>
+          <div class="grid-2">
+            <div class="chart">
+              <h3 class="chart-title">{{Chart title}}</h3>
+              <p class="chart-sub">{{What the chart shows.}}</p>
+              <div id="c1"></div>
+            </div>
+            <div class="chart">
+              <h3 class="chart-title">{{Chart title}}</h3>
+              <p class="chart-sub">{{What the chart shows.}}</p>
+              <div id="c2"></div>
+            </div>
+          </div>
+          <div class="prose section">
+            <p>{{Narrative summary with dated, vault-traceable claims.}}</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="t-detail" hidden>
+          <h2 class="print-panel-title">Detail</h2>
+          <div class="field no-print">
+            <input class="search-input" id="filter" placeholder="Filter rows…" aria-label="Filter table rows">
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="detail-table">
+              <thead><tr><th>Item</th><th>Status</th><th class="num">Value</th></tr></thead>
+              <tbody>
+                <tr><td>{{item}}</td><td><span class="badge badge-ok">On track</span></td><td class="num">{{value}}</td></tr>
+                <tr><td>{{item}}</td><td><span class="badge badge-warn">At risk</span></td><td class="num">{{value}}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="t-sources" hidden>
+          <h2 class="print-panel-title">Sources</h2>
+          <div class="data-list">
+            <div class="data-row"><span class="data-key">{{memory page}}</span><span class="data-value">{{what it contributed}}</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">Prepared by the secretary · {{YYYY-MM-DD}}</footer>
+  </div>
+
+  <script src="../design/claude/kit.js"></script>
+  <script src="../design/claude/charts.js"></script>
+  <script>
+    // guidance: real series come from the vault; never pass colors; ≤5 series.
+    window.renderCharts = function () {
+      lwCharts.sparkline("#spark1", { values: [3, 5, 4, 7, 6, 8] });
+      lwCharts.line("#c1", { labels: ["{{Jan}}", "{{Feb}}", "{{Mar}}"], series: [{ name: "{{Series}}", values: [12, 18, 15] }], area: true });
+      lwCharts.donut("#c2", { slices: [{ label: "{{A}}", value: 41 }, { label: "{{B}}", value: 27 }], totalLabel: "total" });
+    };
+    window.renderCharts();
+
+    const filter = document.getElementById("filter");
+    if (filter) filter.addEventListener("input", () => {
+      const q = filter.value.toLowerCase();
+      document.querySelectorAll("#detail-table tbody tr").forEach((tr) => {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+      });
+    });
+
+    const panels = [...document.querySelectorAll(".tab-panel")];
+    let hiddenBefore = [];
+    addEventListener("beforeprint", () => {
+      hiddenBefore = panels.filter((p) => p.hidden);
+      hiddenBefore.forEach((p) => (p.hidden = false));
+    });
+    addEventListener("afterprint", () => hiddenBefore.forEach((p) => (p.hidden = true)));
+  </script>
+</body>
+</html>

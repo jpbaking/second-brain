@@ -1,0 +1,169 @@
+/* claude — report design kit inspired by the Claude AI web app.
+   Warm ivory light theme / warm charcoal dark theme, terracotta accent,
+   serif display type. Fully offline: system font stacks, no imports.
+
+   Theme resolution:
+     1. <html data-theme="light|dark">  (set by kit.js toggle, persisted)
+     2. otherwise OS prefers-color-scheme
+     3. print is ALWAYS light.
+
+   Pair with components.css; kit.js provides the toggle + tabs; charts.js
+   (token-driven, shared lineage with the lazyway kit) reads --chart-*. */
+
+:root {
+  --font-display: "Iowan Old Style", Georgia, "Palatino Linotype", "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* ---- light (default) ---- */
+  --bg: #FAF9F5;            /* page — warm oat */
+  --surface: #F0EEE6;       /* recessed panels, sidebars */
+  --panel: #FFFFFF;         /* raised cards */
+  --ink: #26241F;
+  --muted: #6F6C64;
+  --line: #E4E1D7;
+  --accent: #D97757;        /* terracotta */
+  --accent-strong: #C15F3C;
+  --accent-wash: #F7EAE3;
+  --success: #5E8C61;
+  --success-wash: #EBF1EA;
+  --warn: #9A6A1B;
+  --warn-wash: #F7EFDD;
+  --danger: #B0413E;
+  --danger-wash: #F7E8E7;
+  --shadow: 0 1px 3px rgba(38, 36, 31, 0.07);
+
+  /* charts (read by charts.js at render time) */
+  --base: #FFFFFF;
+  --chart-1: #C15F3C;  /* terracotta */
+  --chart-2: #3E7CB8;  /* blue */
+  --chart-3: #5E8C61;  /* green */
+  --chart-4: #8A6BAA;  /* violet */
+  --chart-5: #9C7C2D;  /* gold */
+  --chart-other: #98948A;
+  --chart-grid: #ECE9E0;
+  --chart-axis: #D4D1C6;
+  --chart-label: var(--muted);
+  --chart-value: var(--ink);
+  --chart-area-opacity: 0.12;
+
+  background-color: var(--bg);
+  color-scheme: light;
+}
+
+/* ---- dark (explicit) ---- */
+:root[data-theme="dark"] {
+  --bg: #262624;
+  --surface: #1F1E1D;
+  --panel: #30302E;
+  --ink: #EDEBE4;
+  --muted: #A5A29A;
+  --line: #3E3C38;
+  --accent: #D97757;
+  --accent-strong: #E08D6D;
+  --accent-wash: #3A2E28;
+  --success: #8FBE92;
+  --success-wash: #2A332B;
+  --warn: #D3A94F;
+  --warn-wash: #37301F;
+  --danger: #DA8380;
+  --danger-wash: #3A2827;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+
+  --base: #30302E;
+  --chart-1: #E08D6D;
+  --chart-2: #7FB0DC;
+  --chart-3: #8FBE92;
+  --chart-4: #B69BD4;
+  --chart-5: #CFA95C;
+  --chart-other: #7C7970;
+  --chart-grid: #3A3937;
+  --chart-axis: #4A4845;
+
+  color-scheme: dark;
+}
+
+/* ---- dark (OS preference, unless page forced light) ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #262624;
+    --surface: #1F1E1D;
+    --panel: #30302E;
+    --ink: #EDEBE4;
+    --muted: #A5A29A;
+    --line: #3E3C38;
+    --accent: #D97757;
+    --accent-strong: #E08D6D;
+    --accent-wash: #3A2E28;
+    --success: #8FBE92;
+    --success-wash: #2A332B;
+    --warn: #D3A94F;
+    --warn-wash: #37301F;
+    --danger: #DA8380;
+    --danger-wash: #3A2827;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+
+    --base: #30302E;
+    --chart-1: #E08D6D;
+    --chart-2: #7FB0DC;
+    --chart-3: #8FBE92;
+    --chart-4: #B69BD4;
+    --chart-5: #CFA95C;
+    --chart-other: #7C7970;
+    --chart-grid: #3A3937;
+    --chart-axis: #4A4845;
+
+    color-scheme: dark;
+  }
+}
+
+/* ---- print: always light (kit.js also re-renders charts light) ---- */
+@media print {
+  :root, :root[data-theme="dark"] {
+    --bg: #FFFFFF;
+    --surface: #F0EEE6;
+    --panel: #FFFFFF;
+    --ink: #26241F;
+    --muted: #6F6C64;
+    --line: #E4E1D7;
+    --accent: #D97757;
+    --accent-strong: #C15F3C;
+    --accent-wash: #F7EAE3;
+    --success: #5E8C61;
+    --success-wash: #EBF1EA;
+    --warn: #9A6A1B;
+    --warn-wash: #F7EFDD;
+    --danger: #B0413E;
+    --danger-wash: #F7E8E7;
+    --shadow: none;
+
+    --base: #FFFFFF;
+    --chart-1: #C15F3C;
+    --chart-2: #3E7CB8;
+    --chart-3: #5E8C61;
+    --chart-4: #8A6BAA;
+    --chart-5: #9C7C2D;
+    --chart-other: #98948A;
+    --chart-grid: #ECE9E0;
+    --chart-axis: #D4D1C6;
+
+    color-scheme: light;
+  }
+}
+
+/* ---- base ---- */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+}
+h1, h2, h3, .display { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; }
+a { color: var(--accent-strong); text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: var(--accent-wash); }
+img, svg { max-width: 100%; }

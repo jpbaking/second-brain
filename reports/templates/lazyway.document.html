@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{Report title}} — Second Brain</title>
+  <meta name="description" content="{{One plain sentence describing the report.}}">
+  <link rel="icon" href="../design/lazyway/assets/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../design/lazyway/assets/favicons/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="../design/lazyway/assets/favicons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../design/lazyway/styles.css">
+  <link rel="stylesheet" href="../design/lazyway/components.css">
+  <!-- guidance: "Word document" replacement. A4 portrait, paper-on-desk look on
+       screen, clean print. Export: browser Print → Save as PDF, or
+       scripts/export-pdf.sh <this file>. All custom CSS below uses kit tokens
+       only, per the design-kit rules. The single amber element is the kicker. -->
+  <style>
+    body { background: var(--surface-alt); }
+    .sheet {
+      max-width: 210mm;
+      margin: var(--space-6, 48px) auto;
+      background: var(--surface-page);
+      border: 1px solid var(--border-default);
+      box-shadow: 0 2px 12px rgba(22, 24, 46, 0.08);
+      padding: 22mm 20mm;
+    }
+    .doc-head {
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border-default);
+      padding-bottom: 16px; margin-bottom: 24px;
+    }
+    .doc-head img { width: 40px; height: 40px; }
+    .doc-title { margin: 4px 0 0; font-size: var(--ui-h1); letter-spacing: var(--track-tight); }
+    .doc-toolbar { position: fixed; right: 16px; top: 16px; }
+    .page-break { break-after: page; }
+    h2, h3 { break-after: avoid; }
+    .table-wrap, .data-list, .alert, .card { break-inside: avoid; }
+    @page { size: A4; margin: 16mm; }
+    @media print {
+      body { background: var(--surface-page); }
+      .sheet { max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; }
+      .doc-toolbar { display: none; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-toolbar">
+    <button class="btn btn-secondary btn-sm" onclick="window.print()">Export as PDF</button>
+  </div>
+
+  <main class="sheet">
+    <header class="doc-head">
+      <img src="../design/lazyway/assets/logo-mark.svg" alt="">
+      <div>
+        <div class="kicker">// {{Report type, e.g. Performance evaluation}}</div>
+        <h1 class="doc-title">{{Report title}}</h1>
+      </div>
+    </header>
+
+    <!-- guidance: document metadata block — keep to the facts a cover page carries. -->
+    <div class="data-list">
+      <div class="data-row"><span class="data-key">Prepared</span><span class="data-value">{{YYYY-MM-DD}}</span></div>
+      <div class="data-row"><span class="data-key">Period</span><span class="data-value">{{period}}</span></div>
+      <div class="data-row"><span class="data-key">Status</span><span class="data-value">Draft — for principal's review</span></div>
+    </div>
+
+    <!-- guidance: body sections live in .prose so headings, lists, quotes and
+         tables inherit document styling. One .prose block per section. -->
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">// Summary</div>
+        <h2 class="section-title">Summary</h2>
+      </div>
+      <div class="prose">
+        <p>{{Three to five sentences. Written so it could be read aloud.}}</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">// Detail</div>
+        <h2 class="section-title">{{Section title}}</h2>
+      </div>
+      <div class="prose">
+        <p>{{Narrative, with dated claims traceable to memory pages.}}</p>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Item</th><th>Detail</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td>{{item}}</td><td>{{detail}}</td><td class="num">{{value}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- guidance: use an alert for the evidence-gaps / caveats block; alert-warn
+         would spend the page's one amber, so prefer alert-info here. -->
+    <div class="alert alert-info">
+      <span class="alert-title">Gaps</span>
+      <span>{{What the vault lacked for this report, so it can be filled before finalising.}}</span>
+    </div>
+
+    <!-- guidance: force a new printed page with: <div class="page-break"></div> -->
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">// Sources</div>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <div class="prose">
+        <ul>
+          <li>{{memory/people/… or library/… paths consulted}}</li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="muted" style="margin-top: 32px;">Prepared by the second-brain secretary · {{YYYY-MM-DD}}</p>
+  </main>
+</body>
+</html>

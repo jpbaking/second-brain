@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{Report title}} — Second Brain</title>
+  <meta name="description" content="{{One plain sentence describing the report.}}">
+  <link rel="stylesheet" href="../design/claude/styles.css">
+  <link rel="stylesheet" href="../design/claude/components.css">
+  <!-- guidance: "Word document" replacement, claude kit (warm ivory/charcoal,
+       terracotta accent, serif display). Light/dark follows the OS with a
+       manual toggle; printing is always light. Export: browser Print → Save
+       as PDF, or scripts/export-pdf.sh <this file>. Custom CSS below uses kit
+       tokens only. NOTE: this file lives one level under reports/ — when a
+       generated report goes to reports/YYYY/, the ../design/ prefix is
+       unchanged (same depth). -->
+  <style>
+    .sheet {
+      max-width: 210mm;
+      margin: 48px auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      padding: 22mm 20mm;
+    }
+    .doc-toolbar { position: fixed; right: 16px; top: 16px; display: flex; gap: 8px; }
+    .page-break { break-after: page; }
+    h2, h3 { break-after: avoid; }
+    .table-wrap, .data-list, .alert, .card { break-inside: avoid; }
+    @page { size: A4; margin: 16mm; }
+    @media print {
+      body { background: var(--panel); }
+      .sheet { max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+      .doc-toolbar { display: none; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-toolbar">
+    <button class="theme-toggle" data-theme-toggle>☾ dark</button>
+    <button class="btn btn-secondary btn-sm" onclick="window.print()">Export as PDF</button>
+  </div>
+
+  <main class="sheet">
+    <header style="border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 24px;">
+      <div class="eyebrow">{{Report type, e.g. Performance evaluation}}</div>
+      <h1 class="display">{{Report title}}</h1>
+      <p class="lead" style="font-size: 16px; margin: 4px 0 0;">{{One quiet subtitle line.}}</p>
+    </header>
+
+    <div class="data-list">
+      <div class="data-row"><span class="data-key">Prepared</span><span class="data-value">{{YYYY-MM-DD}}</span></div>
+      <div class="data-row"><span class="data-key">Period</span><span class="data-value">{{period}}</span></div>
+      <div class="data-row"><span class="data-key">Status</span><span class="data-value">Draft — for principal's review</span></div>
+    </div>
+
+    <section class="section">
+      <div class="eyebrow">Summary</div>
+      <h2 class="section-title">Summary</h2>
+      <div class="prose">
+        <p>{{Three to five sentences. Written so it could be read aloud.}}</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="eyebrow">Detail</div>
+      <h2 class="section-title">{{Section title}}</h2>
+      <div class="prose">
+        <p>{{Narrative, with dated claims traceable to memory pages.}}</p>
+      </div>
+      <div class="table-wrap" style="margin-top: 16px;">
+        <table class="table">
+          <thead><tr><th>Item</th><th>Detail</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td>{{item}}</td><td>{{detail}}</td><td class="num">{{value}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="alert">
+      <span class="alert-title">Gaps</span>
+      <span>{{What the vault lacked for this report, so it can be filled before finalising.}}</span>
+    </div>
+
+    <!-- guidance: force a new printed page with: <div class="page-break"></div> -->
+
+    <section class="section">
+      <div class="eyebrow">Sources</div>
+      <h2 class="section-title">Sources</h2>
+      <div class="prose">
+        <ul>
+          <li>{{memory/people/… or library/… paths consulted}}</li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="muted" style="margin-top: 32px; font-size: 13.5px;">Prepared by the second-brain secretary · {{YYYY-MM-DD}}</p>
+  </main>
+
+  <script src="../design/claude/kit.js"></script>
+</body>
+</html>

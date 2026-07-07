@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{Deck title}} — Second Brain</title>
+  <meta name="description" content="{{One plain sentence describing the deck.}}">
+  <link rel="icon" href="../design/lazyway/assets/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../design/lazyway/assets/favicons/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="../design/lazyway/assets/favicons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../design/lazyway/styles.css">
+  <link rel="stylesheet" href="../design/lazyway/components.css">
+  <!-- guidance: "PowerPoint" replacement. 16:9 slides (13.333in × 7.5in, the
+       PowerPoint page size). On screen: one slide per viewport, scroll-snap,
+       arrow-key navigation, counter bottom-right. Export: browser Print → Save
+       as PDF (landscape is set by @page) or scripts/export-pdf.sh <this file>.
+       Amber budget is per slide: the title slide's kicker only. Keep slides
+       sparse — if a slide needs a scrollbar it has too much on it. -->
+  <style>
+    html { scroll-snap-type: y mandatory; }
+    body { background: var(--ink); }
+    .slide {
+      box-sizing: border-box;
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      margin: 24px auto;
+      padding: 4.5% 6%;
+      background: var(--surface-page);
+      overflow: hidden;
+      scroll-snap-align: center;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .slide-invert { background: var(--surface-invert); color: var(--text-on-blue); }
+    .slide-invert .slide-title { color: var(--text-on-blue); }
+    .slide-invert .muted { color: var(--text-on-blue-dim); }
+    .slide-title { font-size: var(--ui-h1); letter-spacing: var(--track-tight); margin: 0 0 12px; }
+    .slide-foot {
+      margin-top: auto; padding-top: 16px;
+      display: flex; justify-content: space-between;
+      font-family: var(--font-mono); font-size: var(--ui-kicker); color: var(--muted);
+    }
+    .slide-invert .slide-foot { color: var(--text-on-blue-dim); }
+    .deck-counter {
+      position: fixed; right: 16px; bottom: 12px;
+      font-family: var(--font-mono); font-size: var(--ui-kicker); color: var(--surface);
+    }
+    .slide-mesh { position: absolute; right: 0; bottom: 0; width: 40%; opacity: 0.5; pointer-events: none; }
+    .slide-invert { position: relative; }
+    @page { size: 13.333in 7.5in; margin: 0; }
+    @media print {
+      html { scroll-snap-type: none; }
+      body { background: var(--surface-page); margin: 0; }
+      .slide {
+        width: 13.333in; height: 7.5in; aspect-ratio: auto;
+        margin: 0; break-after: page;
+      }
+      .slide:last-of-type { break-after: auto; }
+      .deck-counter { display: none; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide 1 — title (blue) -->
+  <section class="slide slide-invert">
+    <img class="slide-mesh" src="../design/lazyway/assets/mesh-white.svg" alt="" aria-hidden="true">
+    <div class="kicker">// {{Deck type, e.g. Quarterly team review}}</div>
+    <h1 class="slide-title" style="font-size: 44px;">{{Deck title}}</h1>
+    <p class="lead muted">{{One quiet subtitle line.}}</p>
+    <div class="slide-foot"><span>{{Author / team}}</span><span>{{YYYY-MM-DD}}</span></div>
+  </section>
+
+  <!-- Slide 2 — agenda -->
+  <section class="slide">
+    <div class="section-kicker">// Agenda</div>
+    <h2 class="slide-title">What this covers</h2>
+    <div class="prose">
+      <ol>
+        <li>{{Point one}}</li>
+        <li>{{Point two}}</li>
+        <li>{{Point three}}</li>
+      </ol>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>2</span></div>
+  </section>
+
+  <!-- Slide 3 — stats. guidance: at most one .stat-highlight in the whole deck. -->
+  <section class="slide">
+    <div class="section-kicker">// Headline numbers</div>
+    <h2 class="slide-title">{{Metric slide title}}</h2>
+    <div class="grid-stats">
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+      <div class="stat"><div class="stat-value">{{value}}</div><div class="stat-label">{{label}}</div></div>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>3</span></div>
+  </section>
+
+  <!-- Slide 4 — chart. guidance: one chart per slide, no custom colors, ≤5 series. -->
+  <section class="slide">
+    <div class="section-kicker">// Trend</div>
+    <h2 class="slide-title">{{Chart slide title}}</h2>
+    <div class="chart">
+      <div id="c1"></div>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>4</span></div>
+  </section>
+
+  <!-- Slide 5 — close -->
+  <section class="slide">
+    <div class="section-kicker">// Next steps</div>
+    <h2 class="slide-title">Decisions needed</h2>
+    <div class="prose">
+      <ul>
+        <li>{{Ask one}}</li>
+        <li>{{Ask two}}</li>
+      </ul>
+    </div>
+    <div class="slide-foot"><span>{{Deck title}}</span><span>5</span></div>
+  </section>
+
+  <div class="deck-counter" id="counter">1 / 1</div>
+
+  <script src="../design/lazyway/charts.js"></script>
+  <script>
+    // guidance: replace with real series from the vault; delete if no chart slide.
+    lwCharts.bar("#c1", {
+      labels: ["{{Q1}}", "{{Q2}}", "{{Q3}}"],
+      series: [{ name: "{{Series}}", values: [40, 55, 48] }]
+    });
+
+    // Deck navigation: arrows / PageUp-PageDown / space step slides; counter tracks scroll.
+    const slides = [...document.querySelectorAll(".slide")];
+    const counter = document.getElementById("counter");
+    let current = 0;
+    function go(i) {
+      current = Math.max(0, Math.min(slides.length - 1, i));
+      slides[current].scrollIntoView({ behavior: "smooth" });
+    }
+    addEventListener("keydown", (e) => {
+      if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(current + 1); }
+      if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); go(current - 1); }
+    });
+    const seen = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          current = slides.indexOf(en.target);
+          counter.textContent = `${current + 1} / ${slides.length}`;
+        }
+      });
+    }, { threshold: 0.6 });
+    slides.forEach((s) => seen.observe(s));
+    counter.textContent = `1 / ${slides.length}`;
+  </script>
+</body>
+</html>
