@@ -15,8 +15,10 @@ history.
 
 ## After completing a task
 
-1. Run every applicable validation step, including `python3 scripts/health.py`
-   when `library/`, `memory/`, an index, or a catalog was touched.
+1. Run every applicable validation step. Before committing, run
+   `python3 scripts/validate_commit.py` (or `python scripts/validate_commit.py`
+   on systems where Python 3 uses that command). It checks staged historical
+   integrity and runs the vault health check when applicable.
 2. Review `git diff` and run `git diff --check`.
 3. Stage only the current task's files, using explicit paths. Never use
    `git add .` or `git add -A`.
@@ -35,6 +37,10 @@ history.
 - Never commit unresolved conflicts or failing validation.
 - Never commit pre-existing user changes.
 - Never claim that a commit was created without verifying it.
+
+The validator is the portable source of truth and uses only Python's standard
+library plus Git. No local Git hook is required; agents must invoke it
+explicitly. A local hook or CI may call the same script in future.
 
 To undo a committed task, prefer `git revert <commit>`. Do not rewrite shared
 history.

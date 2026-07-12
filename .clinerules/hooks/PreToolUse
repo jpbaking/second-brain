@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Vault PreToolUse hook — enforces "originals are sacred": blocks file-write
-tools targeting library/ (everything except catalog.md). Library files may
-only be moved/renamed, never edited; that is done via execute_command, which
-this hook deliberately does not police (mv is legitimate).
+"""Vault PreToolUse hook — enforces "originals are sacred".
+
+Blocks direct file writes and obvious mutating shell commands targeting
+library originals. Shell inspection is deliberately conservative and is a
+guardrail, not a security boundary; scripts/validate_commit.py is the final
+staged-change check.
 Fail-open: any error returns {"cancel": false}."""
 
 import json
@@ -10,6 +12,12 @@ import re
 import sys
 
 WRITE_TOOLS = {"write_to_file", "replace_in_file", "apply_diff", "edit_file"}
+SHELL_TOOLS = {"execute_command", "exec_command", "run_command"}
+MUTATING_SHELL_RE = re.compile(
+    r"(?:^|[;&|]\s*)(?:rm|cp|sed|perl|python\d*|truncate|dd|touch|chmod|chown)\b"
+    r"|(?:>|>>)\s*[^;&|]*library[/\\]",
+    re.IGNORECASE,
+)
 
 
 def get_tool(data):
@@ -28,17 +36,27 @@ def get_params(data):
     return {}
 
 
+def is_library_original(path):
+    norm = re.sub(r"^\./", "", path.replace("\\", "/"))
+    return bool(re.match(r"^(.*/)?library/", norm)) and not norm.endswith("catalog.md")
+
+
+def blocked_shell(command):
+    """Catch common destructive writes; allow mv because filing uses it."""
+    if not re.search(r"(?:^|[\s'\"])(?:\./)?library[/\\]", command):
+        return False
+    return bool(MUTATING_SHELL_RE.search(command))
+
+
 def main():
     try:
         data = json.load(sys.stdin)
         tool = get_tool(data)
         params = get_params(data)
         path = str(params.get("path") or params.get("file_path") or "")
-        norm = re.sub(r"^\./", "", path.replace("\\", "/"))
-        if (
-            tool in WRITE_TOOLS
-            and re.match(r"^(.*/)?library/", norm)
-            and not norm.endswith("catalog.md")
+        command = str(params.get("command") or params.get("cmd") or "")
+        if (tool in WRITE_TOOLS and is_library_original(path)) or (
+            tool in SHELL_TOOLS and blocked_shell(command)
         ):
             json.dump(
                 {
@@ -48,7 +66,8 @@ def main():
                         "originals and must never be edited (prime directive 1 "
                         "in .clinerules/00-role.md). Move/rename with a shell "
                         "command if filing; put summaries and corrections in "
-                        "memory/ instead. If the principal explicitly wants an "
+                        "memory/ instead. Moving/renaming originals remains "
+                        "allowed. If the principal explicitly wants an "
                         "original changed, ask them to confirm in chat and "
                         "edit a COPY placed outside library/."
                     ),
