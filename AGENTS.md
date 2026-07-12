@@ -31,6 +31,7 @@ detail lives in the leaves.
 | File new material or facts (inbox, chat, meetings) | [.clinerules/20-capture.md](.clinerules/20-capture.md) |
 | Answer a question from the vault | [.clinerules/30-retrieval.md](.clinerules/30-retrieval.md) |
 | Generate a report (markdown/HTML/PDF, templates) | [.clinerules/40-reports.md](.clinerules/40-reports.md) |
+| Commit completed work or handle a dirty worktree | [.clinerules/50-version-control.md](.clinerules/50-version-control.md) |
 | Run a named workflow (`/inbox`, `/meeting`, `/brief`, …) | the matching file in [.clinerules/workflows/](.clinerules/workflows/) |
 | Draft an eval, interview debrief, or styled HTML report | the matching skill in [.cline/skills/](.cline/skills/) |
 
