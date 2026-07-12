@@ -154,6 +154,43 @@
 }
 .chart-title { font-size: 17px; margin: 0 0 2px; }
 .chart-sub { color: var(--muted); font-size: 13.5px; margin: 0 0 12px; }
+.chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.chart-key {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; color: var(--muted);
+}
+.chart-key::before {
+  content: ""; width: 10px; height: 10px; border-radius: 3px;
+  background: var(--key-color, var(--chart-1));
+}
+.chart-tooltip {
+  position: fixed; z-index: 300; pointer-events: none;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: var(--shadow);
+  padding: 8px 10px; font-size: 12.5px; color: var(--ink);
+  line-height: 1.5; max-width: 240px;
+}
+.chart-tooltip .tt-label {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); display: block;
+}
+.chart svg text {
+  font-family: var(--font-mono); font-size: 11px;
+  fill: var(--chart-label);
+}
+.chart svg .tick-value { font-variant-numeric: tabular-nums; }
+
+/* Screen-reader-only data table charts.js appends after each SVG. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* prose (long-form body) */
 .prose { max-width: 68ch; }

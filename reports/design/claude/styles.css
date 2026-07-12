@@ -41,6 +41,7 @@
   --chart-4: #8A6BAA;  /* violet */
   --chart-5: #9C7C2D;  /* gold */
   --chart-other: #98948A;
+  --chart-seq-3: #DCA48B;  /* de-emphasised terracotta (sparklines) */
   --chart-grid: #ECE9E0;
   --chart-axis: #D4D1C6;
   --chart-label: var(--muted);
@@ -77,6 +78,7 @@
   --chart-4: #B69BD4;
   --chart-5: #CFA95C;
   --chart-other: #7C7970;
+  --chart-seq-3: #9A7360;
   --chart-grid: #3A3937;
   --chart-axis: #4A4845;
 
@@ -110,6 +112,7 @@
     --chart-4: #B69BD4;
     --chart-5: #CFA95C;
     --chart-other: #7C7970;
+    --chart-seq-3: #9A7360;
     --chart-grid: #3A3937;
     --chart-axis: #4A4845;
 
@@ -144,6 +147,7 @@
     --chart-4: #8A6BAA;
     --chart-5: #9C7C2D;
     --chart-other: #98948A;
+    --chart-seq-3: #DCA48B;
     --chart-grid: #ECE9E0;
     --chart-axis: #D4D1C6;
 
