@@ -144,12 +144,10 @@ never given twice.
 
 ## For AI agents (non-Cline)
 
-If you are an agent other than Cline working in this repo: read
-`.clinerules/00-role.md` and `.clinerules/10-structure.md` before
-changing anything. The invariants bind you too — never modify files under
-`library/` (except catalogs), never rewrite `memory/log.md` history,
-update indexes + log with every filing, and run
-`python3 scripts/health.py` before finishing.
+If you are an agent other than Cline working in this repo: start at
+[AGENTS.md](AGENTS.md). It lists the hard invariants and routes you to the
+detailed rules in `.clinerules/` per task — the same small-root,
+detail-in-leaves shape as the vault's own indexes.
 
 ## Privacy
 
