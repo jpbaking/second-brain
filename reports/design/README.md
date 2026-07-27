@@ -28,4 +28,4 @@ kits within one report.
    `.card`, `.table`, `.data-list`, `.stat`, `.tab*`, `.alert`, `.badge`,
    `.btn`, `.prose`, `.chart`) so templates port between kits.
 3. Add `reports/templates/<name>.{document,deck,interactive}.html`.
-4. Add a skill under `.cline/skills/` with the kit's rules; update this table.
+4. Add a skill under `skills/shared/` with the kit's rules, run `./scripts/sync-agent-adapters.sh`, and update this table.

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Vault health check — mechanical invariants only; judgment calls are the
-agent's job (see .clinerules/workflows/checkup.md).
+agent's job (see the vault-checkup skill).
 
 Verifies the DOX-style navigation tree (small roots listing children with
-counts; entries only in leaves) defined in .clinerules/10-structure.md.
+counts; entries only in leaves) defined in rules/shared/10-structure.md.
 
 Run from anywhere: python3 scripts/health.py
 Stdlib only. Always exits 0 (it reports; it doesn't gate)."""
@@ -69,7 +69,7 @@ def read(p):
 section("Inbox backlog")
 backlog = [p for p in (ROOT / "inbox").rglob("*") if p.is_file() and p.name != "README.md"]
 if backlog:
-    flag(f"{len(backlog)} unprocessed file(s) in inbox/ — run /inbox.md")
+    flag(f"{len(backlog)} unprocessed file(s) in inbox/ — use the vault-inbox skill")
     for p in backlog:
         print(f"  - {p.relative_to(ROOT)}")
 else:
@@ -112,9 +112,9 @@ for shard_cat in lib.glob("*/catalog.md"):
 for year, count in sorted(year_counts.items()):
     m = re.search(rf"- \[{year}\]\({year}/catalog\.md\) — (\d+) file", root_cat)
     if not m:
-        flag(f"root catalog missing shard line for {year} — run /reindex.md")
+        flag(f"root catalog missing shard line for {year} — use the vault-reindex skill")
     elif int(m.group(1)) != count:
-        flag(f"root catalog count for {year} is {m.group(1)}, actual {count} — run /reindex.md")
+        flag(f"root catalog count for {year} is {m.group(1)}, actual {count} — use the vault-reindex skill")
 for y in re.findall(r"- \[(\d{4})\]\(\1/catalog\.md\)", root_cat):
     if y not in year_counts:
         flag(f"root catalog lists shard {y} but library/{y}/ has no files")
@@ -143,13 +143,13 @@ for area in areas:
     for p in pages:
         rel = p.relative_to(area).as_posix()
         if f"({rel})" not in area_index:
-            flag(f"page not in its area index: memory/{area.name}/{rel} — run /reindex.md")
+            flag(f"page not in its area index: memory/{area.name}/{rel} — use the vault-reindex skill")
     # root line: link + accurate count
     m = re.search(rf"- \[[^\]]+\]\({area.name}/index\.md\) — (\d+) page", master)
     if not m:
-        flag(f"master index missing area line for memory/{area.name}/ — run /reindex.md")
+        flag(f"master index missing area line for memory/{area.name}/ — use the vault-reindex skill")
     elif int(m.group(1)) != len(pages):
-        flag(f"master index count for {area.name} is {m.group(1)}, actual {len(pages)} — run /reindex.md")
+        flag(f"master index count for {area.name} is {m.group(1)}, actual {len(pages)} — use the vault-reindex skill")
 for line in entry_lines(master.split("## Areas")[-1]):
     if not re.match(r"- \[[^\]]+\]\([a-z-]+/index\.md\)", line):
         flag(f"root memory/index.md has a non-area entry (belongs in an area index): {line[:60]}")

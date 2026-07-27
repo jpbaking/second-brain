@@ -35,5 +35,5 @@ than from scratch, keeping each kit's rules.
 ## Markdown
 
 Starter template for performance evaluations lives with its skill at
-`.cline/skills/performance-evaluation/templates/`; once evolved,
+`skills/shared/performance-evaluation/templates/`; once evolved,
 its copy here takes precedence.

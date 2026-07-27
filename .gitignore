@@ -5,5 +5,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Python bytecode from scripts/ and tests/
+__pycache__/
+*.py[cod]
+
 # Cline/Claude local scratch (not part of the vault contract)
 .clinerules/.cache/

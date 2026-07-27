@@ -23,15 +23,18 @@ weaker model's reliability).
    private instance from it (GitHub: *Use this template*), keep it
    private — it will hold sensitive people data. Optionally add the
    template as an `upstream` remote to pull future improvements.
-2. **Requirements:** [Cline](https://cline.bot) (VS Code extension);
-   `python3` (stdlib only, for the health check and hooks);
-   Chrome/Chromium (optional, for agent-side PDF export).
-3. **Open the folder in Cline.** Rules in `.clinerules/` load
-   automatically; hooks and skills are picked up from `.clinerules/hooks/`
-   and `.cline/skills/`.
-4. **Start using it:** drop files into `inbox/` and say `/inbox.md` — or
-   just tell the agent about your team, meetings, and projects. Ask it
-   anything later.
+2. **Requirements:** any supported coding agent — [Cline](https://cline.bot),
+   Claude Code, OpenAI Codex, Google Antigravity, or Cursor; `python3`
+   (stdlib only, for the health check and hooks); Chrome/Chromium
+   (optional, for agent-side PDF export).
+3. **Open the folder in your agent.** It reads `AGENTS.md` (Claude Code
+   reads `CLAUDE.md`, which imports it), which routes to the rules in
+   `rules/shared/`. Skills are discovered from `.agents/skills/` (Codex,
+   Antigravity, Cline) or `.claude/skills/` (Claude Code). Cline
+   additionally runs the hooks in `.clinerules/hooks/`.
+4. **Start using it:** drop files into `inbox/` and ask the agent to use
+   the `vault-inbox` skill — or just tell it about your team, meetings,
+   and projects. Ask it anything later.
 
 ## How it works
 
@@ -62,44 +65,51 @@ your dumps    originals, untouched,      the agent's synthesis:
 | You say | The secretary does |
 |---|---|
 | *"Sam shipped the migration two weeks early"* | Files it (dated) into Sam's dossier's accomplishments log |
-| *"/prep.md — steering meeting with KDDI folks tomorrow"* | Prep pack: attendee one-liners, open threads, landmines, talking points |
-| *"/one-on-one.md Sam"* | 1:1 arc: recognise / follow up / probe / goal pulse / carry-over |
+| *"Steering meeting with KDDI folks tomorrow — prep me"* | Prep pack: attendee one-liners, open threads, landmines, talking points |
+| *"I've got a 1:1 with Sam"* | 1:1 arc: recognise / follow up / probe / goal pulse / carry-over |
 | *"Draft Sam's performance eval"* | Evidence-based draft from goals + dated entries; flags gaps loudly |
-| *"/project-status.md"* | Portfolio RAG rollup; stale statuses report as "unknown", not old green |
-| *"/brief.md"* | Overdue reminders/commitments, upcoming dates, loose ends |
+| *"Where do the projects stand?"* | Portfolio RAG rollup; stale statuses report as "unknown", not old green |
+| *"What's on today?"* | Overdue reminders/commitments, upcoming dates, loose ends |
 | *"Make that report a deck instead"* + feedback | Report re-done; your formatting persisted as a template for next time |
 
-## Workflows (type `/` in Cline)
+## Vault skills
 
-| Command | Does |
+Describe the task and the agent picks the skill, or name it explicitly —
+"use the `vault-inbox` skill". Most harnesses also accept `/vault-inbox`;
+Codex uses `$` then the skill name.
+
+| Skill | Does |
 |---|---|
-| `/inbox.md` | Process everything in `inbox/` into `library/` + `memory/` |
-| `/remember.md` | File facts you just said in chat |
-| `/recall.md` | Answer a question with sources cited |
-| `/meeting.md` | File meeting minutes; fan out decisions/actions/people facts |
-| `/prep.md` | Meeting prep pack |
-| `/one-on-one.md` | 1:1 prep and post-1:1 capture |
-| `/decision.md` | Record a decision (ADR-style: options, rejections, revisit date) |
-| `/project-status.md` | Single-project deep dive or portfolio RAG rollup |
-| `/cv-update.md` | Turn the principal's brag log into CV-ready bullets |
-| `/brief.md` | Daily brief |
-| `/weekly.md` | Weekly review: sweep, nudge list, people pulse, look ahead |
-| `/handoff.md` | Out-of-office handoff and re-entry brief |
-| `/report.md` | Generate a report (markdown or HTML), template-aware |
-| `/reindex.md` | Rebuild the navigation tree from disk |
-| `/checkup.md` | Health check + judgment-level hygiene |
+| `vault-inbox` | Process everything in `inbox/` into `library/` + `memory/` |
+| `vault-remember` | File facts you just said in chat |
+| `vault-recall` | Answer a question with sources cited |
+| `vault-meeting` | File meeting minutes; fan out decisions/actions/people facts |
+| `vault-prep` | Meeting prep pack |
+| `vault-one-on-one` | 1:1 prep and post-1:1 capture |
+| `vault-decision` | Record a decision (ADR-style: options, rejections, revisit date) |
+| `vault-project-status` | Single-project deep dive or portfolio RAG rollup |
+| `vault-cv-update` | Turn the principal's brag log into CV-ready bullets |
+| `vault-brief` | Daily brief |
+| `vault-weekly` | Weekly review: sweep, nudge list, people pulse, look ahead |
+| `vault-handoff` | Out-of-office handoff and re-entry brief |
+| `vault-reindex` | Rebuild the navigation tree from disk |
+| `vault-checkup` | Health check + judgment-level hygiene |
 
-## Skills (auto-trigger or type `/name`)
+## Document skills
 
 | Skill | Does |
 |---|---|
 | `performance-evaluation` | Evidence-based eval drafts from dossier + goals + meetings |
 | `interview-debrief` | Structured candidate feedback vs your rubric; HR-sensitive handling |
 | `report-builder` | The template-evolution loop for recurring reports |
-| `lazyway-io-design` | Rules for `lazyway.*` HTML reports (kit's own skill) |
 | `claude-report-design` | Rules for `claude.*` HTML reports (light/dark kit) |
 
-## Hooks (`.clinerules/hooks/`, Python, fail-open)
+`lazyway.*` HTML reports use the `lazyway-io-design` skill, which is
+installed user-global from
+[its own repo](https://github.com/jpbaking/lazyway-io-design) rather than
+vendored here — a project copy would be shadowed by the global one.
+
+## Hooks (`.clinerules/hooks/`, Cline-only, Python, fail-open)
 
 - **TaskStart** — injects a briefing into every session: inbox backlog,
   overdue reminders/commitments, unresolved ⚠ markers.
@@ -126,9 +136,11 @@ never given twice.
 
 - `python3 scripts/health.py` — mechanical invariants: inbox backlog,
   shard placement, catalog/index tree consistency and counts, broken
-  links, navigation size rule, overdue items, stale dossiers. Run by
-  `/checkup.md` and `/weekly.md`.
-- `/reindex.md` — rebuilds the tree when drift is found.
+  links, navigation size rule, overdue items, stale dossiers. Run by the
+  `vault-checkup` and `vault-weekly` skills.
+- `vault-reindex` skill — rebuilds the tree when drift is found.
+- `./scripts/sync-agent-adapters.sh` — regenerates `.agents/skills/` and
+  `.claude/skills/` from `skills/shared/`; `--check` fails on drift.
 
 ## Repo layout
 
@@ -138,16 +150,38 @@ never given twice.
 | `library/YYYY/` | Originals, byte-for-byte untouched, per-year catalogs | Agent (move/rename only) |
 | `memory/` | People, meetings, projects, decisions, notes, ideas, topics + root index + append-only log | Agent |
 | `reports/` | Generated reports (`YYYY/`), templates, design kits | Agent |
-| `scripts/` | `health.py`, `export-pdf.sh` | — |
-| `.clinerules/` | Always-on rules, `workflows/`, `hooks/` | You + agent |
-| `.cline/skills/` | On-demand skills | You + agent |
+| `scripts/` | `health.py`, `export-pdf.sh`, `sync-agent-adapters.sh` | — |
+| `AGENTS.md` | Root map — hard invariants + routing (all agents but Claude Code) | You + agent |
+| `CLAUDE.md` | One-line `@AGENTS.md` bridge for Claude Code | You + agent |
+| `rules/shared/` | **Canonical** always-on rules | You + agent |
+| `skills/shared/` | **Canonical** on-demand skills | You + agent |
+| `.agents/skills/`, `.claude/skills/` | Generated skill adapters — never edit | `sync-agent-adapters.sh` |
+| `.agents/rules/` | Pointer rule for Antigravity | You + agent |
+| `.clinerules/hooks/` | Cline-only enforcement hooks | You + agent |
 
-## For AI agents (non-Cline)
+## Multi-harness support
 
-If you are an agent other than Cline working in this repo: start at
-[AGENTS.md](AGENTS.md). It lists the hard invariants and routes you to the
-detailed rules in `.clinerules/` per task — the same small-root,
-detail-in-leaves shape as the vault's own indexes.
+The vault follows the [Universal Agent Support
+Playbook](https://github.com/jpbaking/agent-commons/blob/main/MULTI-HARNESS-SUPPORT.md):
+one canonical source, thin per-harness adapters.
+
+| Harness | Reaches the rules via | Finds skills in |
+|---|---|---|
+| Cline | `AGENTS.md` | `.agents/skills/` |
+| OpenAI Codex | `AGENTS.md` | `.agents/skills/` |
+| Google Antigravity | `AGENTS.md` + `.agents/rules/` | `.agents/skills/` |
+| Cursor | `AGENTS.md` | `.agents/skills/` |
+| Claude Code | `CLAUDE.md` → `@AGENTS.md` | `.claude/skills/` |
+
+Whatever the harness, the portable instruction is the same: **"use the
+`vault-inbox` skill"**. Explicit invocation differs — `/vault-inbox` in
+Claude Code, Antigravity, and Cline; `$` then the skill name in Codex — but
+plain-language mention works everywhere.
+
+If you are an agent working in this repo: start at [AGENTS.md](AGENTS.md).
+It lists the hard invariants and routes you to the detailed rules in
+`rules/shared/` per task — the same small-root, detail-in-leaves shape as
+the vault's own indexes.
 
 ## Privacy
 
