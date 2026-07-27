@@ -39,7 +39,7 @@ def main():
                 f"- inbox/ has {len(backlog)} unprocessed file(s): "
                 + ", ".join(sorted(backlog)[:5])
                 + (" …" if len(backlog) > 5 else "")
-                + " — offer to run the /inbox.md workflow."
+                + " — offer to use the vault-inbox skill."
             )
 
         overdue = []

@@ -26,14 +26,23 @@ detail lives in the leaves.
 
 | You are about to… | Read first |
 |---|---|
-| Do anything at all (role, tone, prime directives) | [.clinerules/00-role.md](.clinerules/00-role.md) |
-| Create, move, or name any file; touch an index/catalog | [.clinerules/10-structure.md](.clinerules/10-structure.md) |
-| File new material or facts (inbox, chat, meetings) | [.clinerules/20-capture.md](.clinerules/20-capture.md) |
-| Answer a question from the vault | [.clinerules/30-retrieval.md](.clinerules/30-retrieval.md) |
-| Generate a report (markdown/HTML/PDF, templates) | [.clinerules/40-reports.md](.clinerules/40-reports.md) |
-| Commit completed work or handle a dirty worktree | [.clinerules/50-version-control.md](.clinerules/50-version-control.md) |
-| Run a named workflow (`/inbox`, `/meeting`, `/brief`, …) | the matching file in [.clinerules/workflows/](.clinerules/workflows/) |
-| Draft an eval, interview debrief, or styled HTML report | the matching skill in [.cline/skills/](.cline/skills/) |
+| Do anything at all (role, tone, prime directives) | [rules/shared/00-role.md](rules/shared/00-role.md) |
+| Create, move, or name any file; touch an index/catalog | [rules/shared/10-structure.md](rules/shared/10-structure.md) |
+| File new material or facts (inbox, chat, meetings) | [rules/shared/20-capture.md](rules/shared/20-capture.md) |
+| Answer a question from the vault | [rules/shared/30-retrieval.md](rules/shared/30-retrieval.md) |
+| Generate a report (markdown/HTML/PDF, templates) | [rules/shared/40-reports.md](rules/shared/40-reports.md) |
+| Commit completed work or handle a dirty worktree | [rules/shared/50-version-control.md](rules/shared/50-version-control.md) |
+| Run a named procedure (process the inbox, file a meeting, brief me, …) | the matching skill in [skills/shared/](skills/shared/) |
+
+Procedures are **Agent Skills**, portable across harnesses. Ask for one by
+name — "use the `vault-inbox` skill" — or just describe the task and let the
+agent select it. The vault's own procedures are prefixed `vault-`
+(`vault-inbox`, `vault-meeting`, `vault-brief`, `vault-recall`,
+`vault-remember`, `vault-decision`, `vault-prep`, `vault-one-on-one`,
+`vault-project-status`, `vault-weekly`, `vault-checkup`, `vault-reindex`,
+`vault-handoff`, `vault-cv-update`); the document-producing ones are
+`report-builder`, `performance-evaluation`, `interview-debrief`, and
+`claude-report-design`.
 
 ## Orientation (map, not content)
 
@@ -43,12 +52,23 @@ library/  → originals, untouched, YYYY/ shards + per-year catalog.md
 memory/   → everything you author: people/ meetings/ projects/ decisions/
             notes/ ideas/ topics/ — plus index.md (root nav) and log.md
 reports/  → generated reports (YYYY/), templates/, design/ kits
-scripts/  → health.py (invariant checker), export-pdf.sh
+scripts/  → health.py (invariant checker), export-pdf.sh,
+            sync-agent-adapters.sh (regenerates the harness adapters)
+
+rules/shared/   → CANONICAL agent rules (this file points at them)
+skills/shared/  → CANONICAL agent skills
+.agents/skills/ → GENERATED adapter (Codex, Antigravity, Cline)
+.claude/skills/ → GENERATED adapter (Claude Code)
+.clinerules/hooks/ → Cline-only enforcement (host-specific, not portable)
 ```
+
+**Never edit `.agents/skills/` or `.claude/skills/` directly** — they are
+generated copies. Edit `skills/shared/`, then run
+`./scripts/sync-agent-adapters.sh` (`--check` verifies they are in sync).
 
 Navigation is a strict two-level tree: root lists children with counts,
 leaves hold entries; any leaf index over **300 lines** gets sharded one
-level deeper (see [.clinerules/10-structure.md](.clinerules/10-structure.md)).
+level deeper (see [rules/shared/10-structure.md](rules/shared/10-structure.md)).
 
 ## If you get lost
 
@@ -56,5 +76,4 @@ level deeper (see [.clinerules/10-structure.md](.clinerules/10-structure.md)).
 - Unsure where a fact goes? File it in `memory/topics/`, note the
   uncertainty in the log — a misfiled note beats an unfiled one.
 - Found drift (wrong counts, broken links)? Run
-  `python3 scripts/health.py`; repair via the
-  [/reindex workflow](.clinerules/workflows/reindex.md).
+  `python3 scripts/health.py`; repair with the `vault-reindex` skill.

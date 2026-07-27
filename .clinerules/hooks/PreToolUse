@@ -64,7 +64,7 @@ def main():
                     "errorMessage": (
                         "Blocked by vault hook: files under library/ are "
                         "originals and must never be edited (prime directive 1 "
-                        "in .clinerules/00-role.md). Move/rename with a shell "
+                        "in rules/shared/00-role.md). Move/rename with a shell "
                         "command if filing; put summaries and corrections in "
                         "memory/ instead. Moving/renaming originals remains "
                         "allowed. If the principal explicitly wants an "

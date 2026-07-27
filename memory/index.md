@@ -2,7 +2,7 @@
 
 DOX-style root: navigation only, one line per **area**, never per page.
 Per-page lines live in each area's own `index.md`. Counts are verified by
-`scripts/health.py`; refresh them (and this file) via `/reindex.md`.
+`scripts/health.py`; refresh them (and this file) with the `vault-reindex` skill.
 
 Area line format:
 `- [Area](area/index.md) — N page(s): what lives there`
