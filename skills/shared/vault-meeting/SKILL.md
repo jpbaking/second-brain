@@ -1,6 +1,6 @@
 ---
 name: vault-meeting
-description: File meeting minutes into the vault and fan out the consequences to reminders, people dossiers, and project pages. Use when the principal gives you a meeting to record — pasted notes, a file in the inbox, or a verbal recap — or asks to write up, file, or capture what happened in a meeting.
+description: File meeting minutes into the vault and fan out the consequences to reminders, people dossiers, project hubs, requirements, technical assets, designs, work items, RAID, releases, and decisions. Use when the principal gives you a meeting to record — pasted notes, a file in the inbox, or a verbal recap — or asks to write up, file, or capture what happened in a meeting.
 ---
 
 # File meeting minutes
@@ -22,6 +22,18 @@ the inbox, or a verbal recap.
    - Facts about attendees (commitments, accomplishments, concerns) → their
      dossiers in `memory/people/`.
    - Project decisions and status → the project page in `memory/projects/`.
+   - Scope, acceptance, or user need → the matching `REQ-*` record; use
+     `vault-requirements` when it needs refinement or approval.
+   - System, interface, environment, infrastructure, or UI-surface facts →
+     `AST-*`, checked against their named authority.
+   - Architecture, infrastructure, security, UI, or UX direction → `DES-*`
+     plus a decision when approved.
+   - Delivery progress/blockers → `WORK-*`, project milestone, and `RAID-*`
+     as applicable.
+   - Readiness, go/no-go, deployment, rollback, or observed outcome →
+     `REL-*`; never promote meeting confidence into verification.
+   Apply `rules/shared/35-technical-project-management.md` and update both
+   sides of each technical link.
 4. Update `memory/meetings/index.md` and the counts in `memory/index.md`,
    then append a `meeting` entry to `memory/log.md`.
 5. Reply with the decisions and action-item list, plus where it was filed.

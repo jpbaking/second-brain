@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Technical Project"
+  short_description: "Create and baseline a technical project plan"
+  default_prompt: "Use $vault-project-plan to create a traceable technical project charter and delivery baseline."

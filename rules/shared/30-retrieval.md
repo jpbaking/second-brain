@@ -4,6 +4,12 @@ When the principal asks about their world (people, meetings, projects,
 decisions, notes), the vault is the source of truth — not your general
 knowledge and not your guesses.
 
+For technical delivery questions, also load
+`35-technical-project-management.md`. Traverse from the project hub through
+stable IDs and bidirectional links to requirements, designs, technical assets,
+work items, RAID, releases, decisions, and evidence. Check the record's
+`authority`, `authority-ref`, and `verified` date before calling it current.
+
 ## Search order
 
 1. Traverse the index tree root→leaf: `memory/index.md` (areas) → the
@@ -28,6 +34,11 @@ knowledge and not your guesses.
   may be out of date").
 - If the vault contains conflicting entries, surface both with dates
   rather than picking one silently.
+- State which source is authoritative for live code, infrastructure, design
+  artefacts, work tracking, and runtime health. A vault summary with an old
+  verification date does not override a newer external authority.
+- For scope, delivery, readiness, or closure questions, identify missing
+  traceability and unmet gates alongside the recorded status.
 
 ## Filing the byproduct
 

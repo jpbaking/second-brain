@@ -21,6 +21,9 @@ detail lives in the leaves.
 5. **Never file into `inbox/`** — only process out of it.
 6. **Run `python3 scripts/health.py` before finishing** any task that
    touched `library/`, `memory/`, or indexes. Fix what it reports.
+7. **Technical status must be traceable.** Never mark a requirement,
+   design, work item, release, or project verified/closed without linked
+   authority and evidence; use `unknown` rather than inventing progress.
 
 ## Where the rules live
 
@@ -30,6 +33,7 @@ detail lives in the leaves.
 | Create, move, or name any file; touch an index/catalog | [rules/shared/10-structure.md](rules/shared/10-structure.md) |
 | File new material or facts (inbox, chat, meetings) | [rules/shared/20-capture.md](rules/shared/20-capture.md) |
 | Answer a question from the vault | [rules/shared/30-retrieval.md](rules/shared/30-retrieval.md) |
+| Plan or update technical projects, systems, infrastructure, requirements, designs, UI/UX, work, risks, or releases | [rules/shared/35-technical-project-management.md](rules/shared/35-technical-project-management.md) |
 | Generate a report (markdown/HTML/PDF, templates) | [rules/shared/40-reports.md](rules/shared/40-reports.md) |
 | Commit completed work or handle a dirty worktree | [rules/shared/50-version-control.md](rules/shared/50-version-control.md) |
 | Run a named procedure (process the inbox, file a meeting, brief me, …) | the matching skill in [skills/shared/](skills/shared/) |
@@ -39,7 +43,9 @@ name — "use the `vault-inbox` skill" — or just describe the task and let the
 agent select it. The vault's own procedures are prefixed `vault-`
 (`vault-inbox`, `vault-meeting`, `vault-brief`, `vault-recall`,
 `vault-remember`, `vault-decision`, `vault-prep`, `vault-one-on-one`,
-`vault-project-status`, `vault-weekly`, `vault-checkup`, `vault-reindex`,
+`vault-project-plan`, `vault-project-update`, `vault-project-status`,
+`vault-requirements`, `vault-system-map`, `vault-design`, `vault-release`,
+`vault-project-close`, `vault-weekly`, `vault-checkup`, `vault-reindex`,
 `vault-handoff`, `vault-cv-update`); the document-producing ones are
 `report-builder`, `performance-evaluation`, `interview-debrief`, and
 `claude-report-design`.
@@ -50,9 +56,10 @@ agent select it. The vault's own procedures are prefixed `vault-`
 inbox/    → raw dumps from the principal (process OUT only)
 library/  → originals, untouched, YYYY/ shards + per-year catalog.md
 memory/   → everything you author: people/ meetings/ projects/ decisions/
-            notes/ ideas/ topics/ — plus index.md (root nav) and log.md
+            technical-assets/ requirements/ designs/ work-items/ raid/
+            releases/ notes/ ideas/ topics/ — plus index.md and log.md
 reports/  → generated reports (YYYY/), templates/, design/ kits
-scripts/  → health.py (invariant checker), export-pdf.sh,
+scripts/  → health.py + project_health.py (invariant checkers), export-pdf.sh,
             sync-agent-adapters.sh (regenerates the harness adapters)
 
 rules/shared/   → CANONICAL agent rules (this file points at them)

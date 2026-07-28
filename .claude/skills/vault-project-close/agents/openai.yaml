@@ -1,0 +1,4 @@
+interface:
+  display_name: "Close Technical Project"
+  short_description: "Verify outcomes, handover, and close a project"
+  default_prompt: "Use $vault-project-close to verify handover and close this technical project safely."

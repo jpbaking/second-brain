@@ -26,6 +26,11 @@ once**, then lives in `reports/templates/` forever.
    Every claim must trace to memory pages — include a discreet Sources
    section or footnotes. Note gaps in the report itself rather than smoothing
    over them.
+   For technical project, system, infrastructure, design/UI/UX, delivery, or
+   release reports, also load
+   `rules/shared/35-technical-project-management.md` and include stable IDs,
+   authority, verification dates, baseline movement, traceability, RAID, and
+   evidence gates.
 5. **Format:**
    - Markdown: clean headings, tables for enumerable facts, and links to
      memory pages as sources.

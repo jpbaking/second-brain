@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update Technical Project"
+  short_description: "Reconcile technical delivery progress and risks"
+  default_prompt: "Use $vault-project-update to capture this update across the project source of truth."

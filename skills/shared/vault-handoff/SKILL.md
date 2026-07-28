@@ -14,6 +14,9 @@ for the dates, and the stand-in if known, when they are not supplied.
 1. Gather everything dated within the window: reminders, commitments in both
    directions, goal checkpoints, decision revisit dates, and meeting cadences
    such as 1:1s that will be missed.
+   Include milestones, project gates, blocked work, RAID reviews, authority
+   verification, release windows/go-no-go decisions, and operational hand-offs
+   landing in the absence.
 2. Produce a handoff document per the report rules in
    `rules/shared/40-reports.md`, using the document shape:
    - **Delegations** — items someone else must move, each with an owner, a
@@ -23,6 +26,9 @@ for the dates, and the stand-in if known, when they are not supplied.
      handle with care. Respect the discretion rules: share the minimum the
      stand-in actually needs.
    - **Do-not-decide list** — decisions that must wait for the principal.
+   For technical delivery, each delegation names stable record IDs, current
+   baseline/state, evidence, decision authority, escalation trigger, and what
+   the stand-in is explicitly not authorised to approve.
 3. Re-date the parked reminders, mark delegated commitments with the
    delegate's name, and log it.
 
