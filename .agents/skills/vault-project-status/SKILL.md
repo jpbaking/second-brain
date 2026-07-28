@@ -1,37 +1,49 @@
 ---
 name: vault-project-status
-description: Report project status from the vault — a deep dive on one project (RAG, movement, risks, dependencies, asks) or a portfolio rollup across all active projects. Use when the principal asks where a project stands, for a status update, portfolio view, or programme review, what is at risk or blocked, what changed on a project, or asks to prepare for a steering meeting.
+description: Report evidence-backed technical project or portfolio status from the vault — outcomes, baseline movement, milestones, requirements, systems/infrastructure, design and UI/UX, delivery, RAID, dependencies, release readiness, decisions, and asks. Use when the principal asks where a project stands, for a status update, portfolio or programme view, steering review, delivery health, readiness, risks, blockers, movement, or what needs attention.
 ---
 
-# Project status
+# Report technical project status
 
-The principal runs multiple concurrent programmes with commercial operator
-deployments. This produces the status view: one project deep, or the
-portfolio wide. Use the single-project path when a project is named, and the
-portfolio path when none is, or when asked for "all projects".
+This is read-only unless the principal also asks to record or reconcile the
+status. Load `rules/shared/35-technical-project-management.md`.
 
 ## Single project
 
-1. Read the project page fully, then pull related entries from meetings,
-   decisions, and commitments since the last status entry.
-2. Deliver: RAG and why; movement since the last status (milestones hit or
-   slipped, new risks, closed issues); the top three risks with owners;
-   dependencies that are blocking or ageing; and the asks — what the
-   principal must decide, escalate, or nudge.
-3. Append the essence of the rollup as a dated status-log entry on the
-   project page. That is how the next rollup knows "since when".
+1. Search for the `PRJ-*` hub, then traverse linked requirements, assets,
+   designs, work, RAID, releases, decisions, meetings, commitments, and
+   evidence. Check authority and verification dates.
+2. Compare current evidence with the previous status and approved baseline:
+   outcomes/KPIs, scope, milestone/date movement, and added/removed IDs.
+3. Assess each dimension separately:
+   - scope and requirement coverage;
+   - architecture/design and UI/UX approval/verification;
+   - build, integration, and delivery flow;
+   - systems, infrastructure, data, security, operations, and ownership;
+   - open RAID, dependencies, critical path, and ageing blockers;
+   - release readiness, rollout/rollback, and observed outcomes.
+4. Derive overall RAG from the worst material evidence, not an average or the
+   old colour. Stale or conflicting authority becomes `unknown` or a named
+   caveat.
+5. Deliver: overall RAG and reason; movement; milestone forecast; top RAID and
+   owners; traceability/authority gaps; next gate; and decisions, escalations,
+   or nudges required.
 
 ## Portfolio
 
-4. One row per project from `memory/projects/`: RAG, phase, next milestone
-   and date, top risk, and ask. Order red, then amber, then green.
-5. Flag projects whose status log is stale — no entry in 30 or more days — as
-   "status unknown — RAG unreliable" rather than repeating the old colour.
+6. One row per active/on-hold/closing project: RAG, phase, next gate/date,
+   baseline movement, top RAID, release state, evidence age, and ask. Order
+   red, amber, unknown, then green.
+7. Include cross-project asset, interface, environment, team, vendor, and
+   release dependencies. Flag conflicting dates or ownership across hubs.
+8. A project with no verified delivery evidence in 30 days is `status
+   unknown — evidence stale`, regardless of its stored colour.
 
-## Output
+## Persist only when asked
 
-6. Chat by default. As a document, the report rules in
-   `rules/shared/40-reports.md` apply: the deck shape suits exec readouts and
-   the document shape suits written programme reviews. Evolve a
-   `project-status` template in `reports/templates/` on first feedback, and
-   log it.
+9. If the principal asks to record/reconcile the result, use
+   `vault-project-update`: update authoritative records, append dated status,
+   preserve baseline history, run project health, and log it. A report alone
+   does not mutate the vault.
+10. Chat by default. For a document or deck, use
+    `reports/templates/technical-project-status.md` and the report rules.

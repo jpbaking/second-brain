@@ -37,3 +37,14 @@ than from scratch, keeping each kit's rules.
 Starter template for performance evaluations lives with its skill at
 `skills/shared/performance-evaluation/templates/`; once evolved,
 its copy here takes precedence.
+
+Technical delivery templates:
+
+- `technical-project-status.md` — baseline movement, delivery dimensions,
+  milestones, RAID, traceability, and asks.
+- `system-overview.md` — system/infra/UI boundary, authority, dependencies,
+  environments, operations, and active change.
+- `design-review.md` — requirement/asset coverage, review findings,
+  alternatives, RAID, and approval gates.
+- `release-readiness.md` — readiness evidence, rollout/rollback, verification,
+  blockers, conditions, and residual risk.

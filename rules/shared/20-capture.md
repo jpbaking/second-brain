@@ -55,6 +55,17 @@ movement → **Milestones** (append the new date, mark the old one
 **Dependencies** plus a *waiting-on* commitment. A slipped date or new
 red risk mentioned in passing is still a capture, not just conversation.
 
+Technical project material additionally follows
+`35-technical-project-management.md`. Classify each claim as a project,
+technical asset, requirement, design, work item, RAID entry, or release
+update. Update the record that owns the truth, both sides of its traceability
+links, and the project hub. A source document in `library/` is evidence, not a
+substitute for an approved record.
+
+Never translate "implemented" into "verified", "deployed" into "healthy", or
+"discussed" into "approved". Preserve the source wording and record the
+missing gate explicitly.
+
 ## People facts — special care
 
 Facts about people go in that person's dossier (`memory/people/`), created

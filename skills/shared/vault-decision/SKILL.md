@@ -21,6 +21,11 @@ technical, organisational, or professional. Get it on the record.
    `memory/notes/reminders.md` with owners and dates; link the decision from
    the related project, people, and meeting pages; set a `revisit by` date if
    the decision has an expiry condition.
+   For technical delivery decisions, also load
+   `rules/shared/35-technical-project-management.md`, record impact on the
+   approved baseline, requirements, assets/interfaces/environments, designs,
+   work, RAID, release/rollback, operations, and UI/UX, then update reciprocal
+   links. A proposed decision does not change approved record state.
 4. If this supersedes an earlier decision page, mark that one
    `superseded by` with a link — never rewrite its history.
 5. Update `memory/decisions/index.md` and the count in `memory/index.md`,

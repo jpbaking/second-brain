@@ -13,6 +13,12 @@ feedback given once should never need to be given twice.
    log it in `memory/log.md`.
 4. In chat, give the file path and a 2–4 line executive summary.
 
+Technical project reports also follow
+`35-technical-project-management.md`. Include record IDs, the authority and
+verification date behind current claims, changes from the approved baseline,
+traceability gaps, open RAID, decisions or approvals needed, and the next
+delivery or release gate. Never colour a project green from narrative alone.
+
 ## HTML reports
 
 HTML reports use one of the **design kits** vendored fully offline under

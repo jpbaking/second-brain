@@ -18,10 +18,15 @@ explicit scope if one is given ("brief for this month").
 2. **Time-sensitive people and project items.** Scan dossiers and project
    pages for dated entries landing in scope — goal checkpoints, review
    dates, anniversaries such as hire dates, and follow-ups marked `⚠`.
+   Include technical-record `review-by`/`due` dates, milestone and baseline
+   changes, blocked or ownerless `WORK-*`, open/high `RAID-*`, stale `AST-*`
+   or `DES-*` verification, and upcoming `REL-*` readiness gates.
 3. **Recent activity.** From `memory/log.md`, what entered the vault in
    scope.
 4. **Loose ends.** Unprocessed inbox files, `⚠ unconfirmed` entries, and
-   unanswered open questions from recent meetings.
+   unanswered open questions from recent meetings. Add project-health issues,
+   authority conflicts, dangling traceability, and approved requirements with
+   no implementing work or verification path.
 5. Deliver in chat, tight and scannable, under the headings
    `Overdue / Today / This week / FYI`.
 
