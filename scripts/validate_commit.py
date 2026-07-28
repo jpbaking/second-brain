@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Validate staged vault changes. Standard-library Python plus Git only."""
 
+import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -62,6 +64,31 @@ def validate_history(changes):
     return errors
 
 
+def run_staged_health():
+    """Run the health check against exactly what is staged in Git."""
+    with tempfile.TemporaryDirectory(prefix="second-brain-staged-") as temp:
+        staged_root = Path(temp)
+        git(
+            "checkout-index",
+            "--all",
+            f"--prefix={staged_root}{os.sep}",
+        )
+        health_script = staged_root / "scripts" / "health.py"
+        if not health_script.exists():
+            return subprocess.CompletedProcess(
+                args=[],
+                returncode=1,
+                stdout="staged snapshot is missing scripts/health.py\n",
+            )
+        return subprocess.run(
+            [sys.executable, str(health_script)],
+            cwd=staged_root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+
+
 def main():
     try:
         changes = staged_paths()
@@ -92,13 +119,18 @@ def main():
         for _, old, new in changes
     )
     if touched_vault or touched_project_model:
-        health = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "health.py")], cwd=ROOT,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-        )
-        print(health.stdout, end="")
-        if "Vault healthy: no mechanical issues found." not in health.stdout:
-            errors.append("vault health check reported mechanical issues")
+        try:
+            health = run_staged_health()
+        except (OSError, subprocess.CalledProcessError) as exc:
+            errors.append(f"cannot validate staged snapshot: {exc}")
+            health = None
+        if health is not None:
+            print(health.stdout, end="")
+            if (
+                health.returncode != 0
+                or "Vault healthy: no mechanical issues found." not in health.stdout
+            ):
+                errors.append("staged vault health check reported mechanical issues")
 
     if errors:
         print("\nVALIDATION FAILED:")

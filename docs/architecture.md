@@ -164,6 +164,8 @@ python3 -m unittest discover -s tests
 ./scripts/sync-agent-adapters.sh --check
 ```
 
-`validate_commit.py` inspects staged changes and invokes the vault health check
-when applicable. It prevents a commit from silently changing protected
-history or originals.
+`validate_commit.py` inspects staged changes and materialises the Git index in
+an isolated temporary directory before invoking the vault health check. It
+therefore validates the exact proposed commit, not unstaged working-tree
+repairs, and prevents a commit from silently changing protected history or
+originals.

@@ -239,15 +239,16 @@ python3 scripts/health.py
 Project health checks:
 
 - record frontmatter, stable IDs, canonical paths, kinds, and allowed states;
-- project scope and required metadata;
+- project scope, typed metadata, calendar dates, and verification chronology;
 - duplicate, dangling, and one-way traceability;
-- missing project hubs and prematurely closed records;
+- missing project hubs, unfinished linked work, and prematurely closed records;
 - requirement, work, design, release, and closure evidence gates;
 - unassigned ownership, stale authority, and overdue review;
 - release readiness and unresolved obligations.
 
 Warnings surface work that needs attention. Issues fail strict validation and
-the staged commit check.
+the staged commit check, which runs against an isolated copy of the Git index
+rather than the potentially different working tree.
 
 ## Report templates
 

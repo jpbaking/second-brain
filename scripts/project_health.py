@@ -24,15 +24,17 @@ AREAS = {
     "release": "releases",
 }
 
+SLUG = r"[a-z0-9]+(?:-[a-z0-9]+)*"
+
 ID_PATTERNS = {
-    "project": re.compile(r"^PRJ-([a-z0-9][a-z0-9-]*)$"),
-    "technical-asset": re.compile(r"^AST-([a-z0-9][a-z0-9-]*)$"),
-    "requirement": re.compile(r"^REQ-([a-z0-9][a-z0-9-]*?)-(\d{3})$"),
-    "design": re.compile(r"^DES-([a-z0-9][a-z0-9-]*?)-(\d{3})$"),
-    "work-item": re.compile(r"^WORK-([a-z0-9][a-z0-9-]*?)-(\d{3})$"),
-    "raid": re.compile(r"^RAID-([a-z0-9][a-z0-9-]*?)-(\d{3})$"),
+    "project": re.compile(rf"^PRJ-({SLUG})$"),
+    "technical-asset": re.compile(rf"^AST-({SLUG})$"),
+    "requirement": re.compile(rf"^REQ-({SLUG})-(\d{{3}})$"),
+    "design": re.compile(rf"^DES-({SLUG})-(\d{{3}})$"),
+    "work-item": re.compile(rf"^WORK-({SLUG})-(\d{{3}})$"),
+    "raid": re.compile(rf"^RAID-({SLUG})-(\d{{3}})$"),
     "release": re.compile(
-        r"^REL-([a-z0-9][a-z0-9-]*?)-(\d{8})(?:-(\d+))?$"
+        rf"^REL-({SLUG})-(\d{{8}})(?:-([1-9]\d*))?$"
     ),
 }
 
@@ -102,6 +104,17 @@ TYPE_FIELDS = {
     "release": {"window", "review-by"},
 }
 
+PRIORITIES = {
+    "unassigned", "must", "should", "could", "will-not",
+    "critical", "high", "medium", "low",
+}
+EVIDENCE_STATES = {
+    "project": {"closed"},
+    "requirement": {"verified"},
+    "design": {"verified"},
+    "work-item": {"verified"},
+    "release": {"verified", "closed"},
+}
 ID_REF_RE = re.compile(
     r"\b(?:PRJ|AST|REQ|DES|WORK|RAID|REL)-[A-Za-z0-9][A-Za-z0-9-]*"
 )
@@ -143,6 +156,28 @@ def parse_date(value: str) -> dt.date | None:
         return dt.date.fromisoformat(value)
     except (TypeError, ValueError):
         return None
+
+
+def parse_window(value: str) -> dt.datetime | None:
+    try:
+        return dt.datetime.strptime(value, "%Y-%m-%dT%H:%MZ").replace(
+            tzinfo=dt.timezone.utc
+        )
+    except (TypeError, ValueError):
+        return None
+
+
+def valid_tags(value: str) -> bool:
+    if not value.startswith("[") or not value.endswith("]"):
+        return False
+    inner = value[1:-1].strip()
+    if not inner:
+        return True
+    for item in inner.split(","):
+        tag = item.strip().strip("\"'")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", tag):
+            return False
+    return True
 
 
 def parse_frontmatter(path: Path) -> tuple[dict[str, str], str, list[str]]:
@@ -212,6 +247,28 @@ def _real_field(record: Record, label: str) -> bool:
     return bool(match and not PLACEHOLDER_RE.search(match.group(1)))
 
 
+def _field_refs(record: Record, label: str, prefix: str) -> set[str]:
+    pattern = re.compile(
+        rf"(?im)^\s*[-*]?\s*\*{{0,2}}{re.escape(label)}\*{{0,2}}\s*:\s*(.+)$"
+    )
+    match = pattern.search(record.text)
+    if not match:
+        return set()
+    return {
+        ref for ref in ID_REF_RE.findall(match.group(1))
+        if ref.startswith(prefix)
+    }
+
+
+def _linked_records(
+    record: Record, by_id: dict[str, Record], prefix: str, label: str | None = None
+) -> list[Record]:
+    refs = _field_refs(record, label, prefix) if label else set()
+    if not refs:
+        refs = {ref for ref in record.refs if ref.startswith(prefix)}
+    return [by_id[ref] for ref in sorted(refs) if ref in by_id]
+
+
 def _validate_path(record: Record, root: Path, issues: list[str]) -> None:
     rel = record.path.relative_to(root / "memory")
     rid = record.id.lower()
@@ -245,6 +302,11 @@ def _validate_schema(
     match = pattern.fullmatch(record.id) if pattern else None
     if not match:
         result.issues.append(f"{rel}: invalid {record.type} ID {record.id!r}")
+    elif record.type == "release":
+        try:
+            dt.datetime.strptime(match.group(2), "%Y%m%d")
+        except ValueError:
+            result.issues.append(f"{rel}: release ID contains an invalid calendar date")
     if record.meta.get("status") not in STATUSES.get(record.type, set()):
         result.issues.append(
             f"{rel}: invalid {record.type} status {record.meta.get('status')!r}"
@@ -255,8 +317,35 @@ def _validate_schema(
         )
     if record.meta.get("authority") not in {"vault", "external"}:
         result.issues.append(f"{rel}: authority must be vault or external")
-    if PLACEHOLDER_RE.search(record.meta.get("authority-ref", "")):
+    authority_ref = record.meta.get("authority-ref", "")
+    if not authority_ref or PLACEHOLDER_RE.search(authority_ref):
         result.issues.append(f"{rel}: authority-ref is missing or still a placeholder")
+    if not valid_tags(record.meta.get("tags", "")):
+        result.issues.append(f"{rel}: tags must be an inline list")
+
+    if record.type in {"requirement", "work-item"}:
+        priority = record.meta.get("priority", "")
+        if priority not in PRIORITIES:
+            result.issues.append(f"{rel}: invalid priority {priority!r}")
+    if record.type in {"requirement", "design"}:
+        version = record.meta.get("version", "")
+        if not version or PLACEHOLDER_RE.search(version):
+            result.issues.append(f"{rel}: version is missing or still a placeholder")
+    if record.type in {"work-item", "raid"}:
+        due = record.meta.get("due", "")
+        if due not in {"none", "unknown"} and not parse_date(due):
+            result.issues.append(f"{rel}: due is not YYYY-MM-DD, none, or unknown: {due!r}")
+    if record.type == "release":
+        window = record.meta.get("window", "")
+        if window not in {"none", "unknown"} and not parse_window(window):
+            result.issues.append(
+                f"{rel}: window is not YYYY-MM-DDTHH:MMZ, none, or unknown: {window!r}"
+            )
+        if (
+            record.status in {"ready", "approved", "deploying", "deployed", "verified", "closed"}
+            and not parse_window(window)
+        ):
+            result.issues.append(f"{rel}: {record.status} release requires a concrete window")
 
     dates: dict[str, dt.date] = {}
     for field_name in ("date", "updated", "verified"):
@@ -268,8 +357,23 @@ def _validate_schema(
             dates[field_name] = parsed
     if dates.get("updated") and dates.get("date") and dates["updated"] < dates["date"]:
         result.issues.append(f"{rel}: updated date precedes record date")
+    for field_name in ("date", "updated"):
+        if dates.get(field_name) and dates[field_name] > today:
+            result.issues.append(f"{rel}: {field_name} is in the future")
     if dates.get("verified") and dates["verified"] > today:
         result.issues.append(f"{rel}: verified date is in the future")
+    if dates.get("verified") and dates.get("date") and dates["verified"] < dates["date"]:
+        result.issues.append(f"{rel}: verified date precedes record date")
+    if (
+        dates.get("verified")
+        and dates.get("updated")
+        and dates["verified"] < dates["updated"]
+    ):
+        message = f"{rel}: authority verification predates the latest material update"
+        if record.status in EVIDENCE_STATES.get(record.type, set()):
+            result.issues.append(message)
+        else:
+            result.warnings.append(message)
 
     if record.type == "project":
         if record.meta.get("project") != "none":
@@ -313,14 +417,27 @@ def _validate_schema(
                 )
 
 
-def _validate_lifecycle(record: Record, root: Path, result: Result) -> None:
+def _validate_lifecycle(
+    record: Record, root: Path, by_id: dict[str, Record], result: Result
+) -> None:
     rel = _relative(record, root)
     refs = record.refs
     if record.type == "requirement":
-        if record.status in {"implemented", "verified"} and not any(
-            ref.startswith("WORK-") for ref in refs
-        ):
+        work = _linked_records(record, by_id, "WORK-", "Work items")
+        if record.status in {"implemented", "verified"} and not work:
             result.issues.append(f"{rel}: {record.status} requirement has no WORK-* evidence")
+        elif record.status in {"implemented", "verified"}:
+            allowed = (
+                {"done", "verified"}
+                if record.status == "implemented"
+                else {"verified"}
+            )
+            unfinished = [item.id for item in work if item.status not in allowed]
+            if unfinished:
+                result.issues.append(
+                    f"{rel}: {record.status} requirement has unfinished WORK-* "
+                    f"evidence: {', '.join(unfinished)}"
+                )
         if record.status == "verified" and not _real_field(record, "Verification evidence"):
             result.issues.append(f"{rel}: verified requirement lacks verification evidence")
     elif record.type == "design":
@@ -329,6 +446,23 @@ def _validate_lifecycle(record: Record, root: Path, result: Result) -> None:
                 result.issues.append(f"{rel}: {record.status} design has no REQ-* trace")
             if not any(ref.startswith("AST-") for ref in refs):
                 result.issues.append(f"{rel}: {record.status} design has no AST-* trace")
+        if record.status in {"implemented", "verified"}:
+            work = _linked_records(record, by_id, "WORK-", "Work items")
+            allowed = {"done", "verified"} if record.status == "implemented" else {"verified"}
+            unfinished = [item.id for item in work if item.status not in allowed]
+            if not work:
+                result.issues.append(
+                    f"{rel}: {record.status} design lacks matching WORK-* evidence"
+                )
+            elif unfinished:
+                result.issues.append(
+                    f"{rel}: {record.status} design has unfinished WORK-* evidence: "
+                    f"{', '.join(unfinished)}"
+                )
+        if record.status == "verified" and not _real_field(
+            record, "Test and validation evidence"
+        ):
+            result.issues.append(f"{rel}: verified design lacks validation evidence")
     elif record.type == "work-item":
         if record.status in {"ready", "in-progress", "blocked", "done", "verified"}:
             if not any(ref.startswith(("REQ-", "DES-")) for ref in refs):
@@ -341,12 +475,48 @@ def _validate_lifecycle(record: Record, root: Path, result: Result) -> None:
                 if not parse_date(record.meta.get(field_name, "")):
                     result.issues.append(f"{rel}: open RAID lacks valid {field_name}")
     elif record.type == "release":
+        work = _linked_records(record, by_id, "WORK-", "Included work")
+        requirements = _linked_records(
+            record, by_id, "REQ-", "Requirements / designs"
+        )
+        designs = _linked_records(record, by_id, "DES-", "Requirements / designs")
         if record.status in {"ready", "approved", "deploying", "deployed", "verified", "closed"}:
-            for prefix in ("WORK-", "AST-"):
-                if not any(ref.startswith(prefix) for ref in refs):
-                    result.issues.append(
-                        f"{rel}: {record.status} release has no {prefix}* trace"
-                    )
+            if not work:
+                result.issues.append(f"{rel}: {record.status} release has no WORK-* trace")
+            if not any(ref.startswith("AST-") for ref in refs):
+                result.issues.append(f"{rel}: {record.status} release has no AST-* trace")
+            allowed_work = (
+                {"verified"} if record.status in {"verified", "closed"}
+                else {"done", "verified"}
+            )
+            unfinished = [item.id for item in work if item.status not in allowed_work]
+            if unfinished:
+                result.issues.append(
+                    f"{rel}: {record.status} release has unfinished included work: "
+                    f"{', '.join(unfinished)}"
+                )
+            allowed_requirements = (
+                {"verified"} if record.status in {"verified", "closed"}
+                else {"implemented", "verified"}
+            )
+            incomplete_requirements = [
+                item.id for item in requirements
+                if item.status not in allowed_requirements
+            ]
+            if incomplete_requirements:
+                result.issues.append(
+                    f"{rel}: {record.status} release has incomplete requirements: "
+                    f"{', '.join(incomplete_requirements)}"
+                )
+            unapproved_designs = [
+                item.id for item in designs
+                if item.status not in {"approved", "implemented", "verified"}
+            ]
+            if unapproved_designs:
+                result.issues.append(
+                    f"{rel}: {record.status} release has unapproved designs: "
+                    f"{', '.join(unapproved_designs)}"
+                )
         if record.status in {"approved", "deploying", "deployed", "verified", "closed"}:
             if "- [ ]" in record.text:
                 result.issues.append(f"{rel}: {record.status} release has unchecked readiness gates")
@@ -369,7 +539,9 @@ def validate(root: Path, today: dt.date | None = None) -> Result:
         elif record.id:
             by_id[record.id] = record
         _validate_schema(record, root, today, result)
-        _validate_lifecycle(record, root, result)
+
+    for record in result.records:
+        _validate_lifecycle(record, root, by_id, result)
 
     for record in result.records:
         rel = _relative(record, root)

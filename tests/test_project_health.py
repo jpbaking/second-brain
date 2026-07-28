@@ -128,7 +128,8 @@ class ProjectHealthTests(unittest.TestCase):
             priority="must", version="2", review_by="2026-07-28",
         )
         self.write(
-            "design", ids[3], "verified", refs,
+            "design", ids[3], "verified",
+            refs + "\n- **Test and validation evidence:** accepted review",
             version="3", review_by="2026-10-01",
         )
         self.write(
@@ -226,6 +227,27 @@ class ProjectHealthTests(unittest.TestCase):
         self.assertTrue(any("has no WORK-* evidence" in x for x in result.issues))
         self.assertTrue(any("lacks verification evidence" in x for x in result.issues))
 
+    def test_verified_requirement_rejects_backlog_work_as_evidence(self):
+        refs = "PRJ-alpha REQ-alpha-001 WORK-alpha-001"
+        self.write(
+            "project", "PRJ-alpha", "active", refs,
+            review_by="2026-08-01",
+        )
+        self.write(
+            "requirement", "REQ-alpha-001", "verified",
+            refs + "\n- **Verification evidence:** accepted test report",
+            priority="must", version="1", review_by="2026-08-01",
+        )
+        self.write(
+            "work-item", "WORK-alpha-001", "backlog", refs,
+            priority="must", due="2026-08-01",
+        )
+        result = project_health.validate(self.root, self.today)
+        self.assertTrue(any(
+            "verified requirement has unfinished WORK-* evidence: WORK-alpha-001" in issue
+            for issue in result.issues
+        ))
+
     def test_closed_project_rejects_open_child(self):
         self.write(
             "project", "PRJ-alpha", "closed", "WORK-alpha-001",
@@ -269,6 +291,90 @@ class ProjectHealthTests(unittest.TestCase):
         self.assertTrue(any("has no WORK-* trace" in x for x in result.issues))
         self.assertTrue(any("has no AST-* trace" in x for x in result.issues))
         self.assertTrue(any("unchecked readiness gates" in x for x in result.issues))
+
+    def test_closed_release_rejects_unfinished_included_work(self):
+        refs = "PRJ-alpha AST-core WORK-alpha-001 REL-alpha-20260728"
+        self.write(
+            "project", "PRJ-alpha", "active", refs,
+            review_by="2026-08-01",
+        )
+        self.write(
+            "technical-asset", "AST-core", "active", refs,
+            project="PRJ-alpha", review_by="2026-10-01",
+        )
+        self.write(
+            "work-item", "WORK-alpha-001", "backlog", refs,
+            priority="must", due="2026-08-01",
+        )
+        self.write(
+            "release", "REL-alpha-20260728", "closed",
+            refs + "\n- **Included work:** WORK-alpha-001"
+            "\n- [x] all readiness gates"
+            "\n- **Evidence:** observation window passed",
+            window="2026-08-01T02:00Z", review_by="2026-08-01",
+        )
+        result = project_health.validate(self.root, self.today)
+        self.assertTrue(any(
+            "closed release has unfinished included work: WORK-alpha-001" in issue
+            for issue in result.issues
+        ))
+
+    def test_rejects_invalid_typed_metadata(self):
+        refs = "PRJ-alpha REQ-alpha-001 WORK-alpha-001 REL-alpha-20260728"
+        self.write(
+            "project", "PRJ-alpha", "active", refs,
+            review_by="2026-08-01",
+        )
+        self.write(
+            "requirement", "REQ-alpha-001", "draft", refs,
+            priority="urgent", version="unknown", review_by="2026-08-01",
+        )
+        self.write(
+            "work-item", "WORK-alpha-001", "backlog", refs,
+            priority="urgent", due="tomorrow",
+        )
+        self.write(
+            "release", "REL-alpha-20260728", "planned", refs,
+            window="not-a-window", review_by="2026-08-01",
+            tags="not-a-list",
+        )
+        result = project_health.validate(self.root, self.today)
+        self.assertTrue(any("tags must be an inline list" in x for x in result.issues))
+        self.assertTrue(any("window is not YYYY-MM-DDTHH:MMZ" in x for x in result.issues))
+        self.assertTrue(any("invalid priority 'urgent'" in x for x in result.issues))
+        self.assertTrue(any("version is missing or still a placeholder" in x for x in result.issues))
+        self.assertTrue(any("due is not YYYY-MM-DD" in x for x in result.issues))
+
+    def test_rejects_invalid_release_id_calendar_date(self):
+        refs = "PRJ-alpha REL-alpha-20261340"
+        self.write(
+            "project", "PRJ-alpha", "active", refs,
+            review_by="2026-08-01",
+        )
+        self.write(
+            "release", "REL-alpha-20261340", "planned", refs,
+            window="2026-08-01T02:00Z", review_by="2026-08-01",
+        )
+        result = project_health.validate(self.root, self.today)
+        self.assertTrue(any(
+            "release ID contains an invalid calendar date" in issue
+            for issue in result.issues
+        ))
+
+    def test_rejects_invalid_date_chronology(self):
+        self.write(
+            "project", "PRJ-alpha", "closed", "",
+            date="2027-01-01", updated="2027-02-01",
+            verified="2026-01-01", review_by="2027-03-01",
+        )
+        result = project_health.validate(self.root, self.today)
+        self.assertTrue(any("date is in the future" in x for x in result.issues))
+        self.assertTrue(any("updated is in the future" in x for x in result.issues))
+        self.assertTrue(any("verified date precedes record date" in x for x in result.issues))
+        self.assertTrue(any(
+            "authority verification predates the latest material update" in x
+            for x in result.issues
+        ))
 
     def test_project_scoped_id_must_match_project(self):
         path = self.write(
