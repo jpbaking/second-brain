@@ -13,10 +13,13 @@ after manual edits, suspected drift, wrong counts, or when the
 ## Steps
 
 1. **Area indexes (leaves).** Walk each `memory/<area>/`, skipping `index.md`
-   and `_template.md`. For each page, derive its one-line summary from its
-   content, taking the freshest dated entry as the "updated" date. Rewrite
-   the area's `index.md` in the standard entry format, preserving the
-   existing grouping and ordering conventions.
+   and `_template.md`. Include pages nested under project-scoped directories
+   such as `requirements/prj-<slug>/`; keep their relative paths in the area
+   index. For each page, derive its ID, title, kind, status, owner, project,
+   `updated`, and `verified` from frontmatter where present, falling back to
+   the freshest dated entry for legacy pages. Rewrite the area's `index.md`
+   in the standard entry format, preserving the existing grouping and
+   ordering conventions.
 2. **Master index (root).** Rewrite `memory/index.md` with one line per area
    and the recounted page totals. No per-page lines at root.
 3. **Year catalogs (leaves).** For each `library/YYYY/`, reconcile its
@@ -30,7 +33,11 @@ after manual edits, suspected drift, wrong counts, or when the
    year shard and the recounted file totals.
 5. **Size rule.** Any leaf index or catalog over 300 lines gets sharded one
    level deeper, per the procedure in `rules/shared/10-structure.md`.
-6. Append a `reindex` entry to `memory/log.md`, then run
+6. **Technical records.** Preserve stable IDs and project-scoped paths from
+   `rules/shared/35-technical-project-management.md`. Flag duplicate IDs,
+   missing project hubs, or records whose project/traceability links cannot
+   be resolved; never renumber them during a reindex.
+7. Append a `reindex` entry to `memory/log.md`, then run
    `python3 scripts/health.py` to confirm the tree is consistent.
-7. Report pages and files indexed, counts fixed, orphans adopted, and
+8. Report pages and files indexed, counts fixed, orphans adopted, and
    discrepancies flagged.

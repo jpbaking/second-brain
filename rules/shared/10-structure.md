@@ -12,6 +12,12 @@ memory/       ← everything you author. The actual brain.
   people/     ← one dossier per person (team members, stakeholders). _template.md defines the shape.
   meetings/   ← minutes, one file per meeting, in YYYY/ subfolders.
   projects/   ← one page per ongoing project/initiative.
+  technical-assets/ ← systems, services, APIs, data, infra, environments, UI surfaces.
+  requirements/ ← project-scoped requirements and acceptance criteria.
+  designs/    ← project-scoped technical, infrastructure, security, UI/UX designs.
+  work-items/ ← project-scoped outcomes, workstreams, epics, features, tasks.
+  raid/       ← project-scoped risks, assumptions, issues, dependencies.
+  releases/   ← project-scoped release, migration, and change records.
   decisions/  ← one page per significant decision (ADR-style), YYYY-MM-DD_slug.md.
   notes/      ← mental notes; reminders.md (self tasks) + commitments.md
                 (promises between people: I-owe / waiting-on).
@@ -31,6 +37,10 @@ scripts/      ← health.py integrity check, validate_commit.py, export-pdf.sh.
   the original extension. Collisions: append `-2`, `-3`.
 - **Memory pages:** `kebab-slug.md`. People: `firstname-lastname.md`.
   Meetings: `YYYY/YYYY-MM-DD_topic-slug.md`.
+- **Technical delivery records:** use the stable IDs and canonical locations
+  in `35-technical-project-management.md`. Project-scoped records live one
+  folder below their area as `memory/<area>/prj-<stable-slug>/...`; the area
+  index lists their relative paths.
 - **Reports:** `reports/YYYY/YYYY-MM-DD_report-slug.md` (or `.html`).
 - **Wiki links:** cross-reference memory pages with relative markdown links,
   e.g. `[Sam Reyes](../people/sam-reyes.md)`. Link liberally — links are how

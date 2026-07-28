@@ -15,6 +15,10 @@ or attendees if neither is supplied.
 1. Identify the attendees and subject, then traverse the indexes for each
    attendee's dossier, the related project and topic pages, and any relevant
    decision pages.
+   For a technical or delivery meeting, also load
+   `rules/shared/35-technical-project-management.md` and traverse the current
+   baseline, requirements, assets, designs, work, RAID, releases, and their
+   authority/verification dates.
 2. Assemble the pack in chat, tight and scannable:
    - **People** — one line per attendee: role, working style, current state
      of the relationship, and anything sensitive to avoid raising.
@@ -22,10 +26,14 @@ or attendees if neither is supplied.
      unanswered questions from previous meetings on this subject.
    - **State of play** — project and decision status with dates, and what has
      changed since the principal last touched it.
+     For technical reviews, include traceability gaps, baseline movement,
+     system/infra/UI/UX impact, readiness gates, and evidence freshness.
    - **Landmines and asks** — recorded disagreements or risks likely to
      surface, and what the principal should push for or concede.
    - **Suggested agenda / talking points** — three to six bullets.
 3. Flag what the vault does *not* know ("no entries on X's position").
+   Do not fill missing approvals, owners, acceptance, or runtime evidence from
+   inference.
 4. If a written pre-read is wanted instead, produce it per the report rules
    in `rules/shared/40-reports.md`. This is a natural template to evolve.
 5. Afterwards, remind the principal to record the outcome with the

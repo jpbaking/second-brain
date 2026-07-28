@@ -78,7 +78,20 @@ def main():
         or (new or old) in {"library/catalog.md", "memory/index.md"}
         for _, old, new in changes
     )
-    if touched_vault:
+    touched_project_model = any(
+        (new or old).startswith(
+            (
+                "rules/shared/",
+                "skills/shared/",
+                ".agents/skills/",
+                ".claude/skills/",
+                "scripts/project_health.py",
+                "tests/test_project_health.py",
+            )
+        )
+        for _, old, new in changes
+    )
+    if touched_vault or touched_project_model:
         health = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "health.py")], cwd=ROOT,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,

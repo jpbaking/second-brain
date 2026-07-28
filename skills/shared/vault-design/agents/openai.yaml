@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Technical Design"
+  short_description: "Create and govern technical or UI/UX designs"
+  default_prompt: "Use $vault-design to create or review this traceable technical or UI/UX design."

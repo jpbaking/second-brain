@@ -32,12 +32,33 @@ The agent-authored working-memory layer:
 - `people/` for dossiers;
 - `meetings/` for dated minutes;
 - `projects/` for initiatives and status;
+- `technical-assets/` for long-lived systems, services, APIs, data,
+  infrastructure, environments, and UI surfaces;
+- `requirements/`, `designs/`, `work-items/`, `raid/`, and `releases/` for
+  project-scoped technical delivery records;
 - `decisions/` for ADR-style records;
 - `notes/` for reminders and commitments;
 - `ideas/` and `topics/` for other synthesis.
 
 Every factual entry is dated. Derived notes identify their source, and answers
 distinguish recorded evidence from inference.
+
+## Technical delivery graph
+
+Technical project management uses seven stable record types: `PRJ-*`,
+`AST-*`, `REQ-*`, `DES-*`, `WORK-*`, `RAID-*`, and `REL-*`. The project hub
+links the current baseline and every register; linked records point back.
+
+The vault is authoritative for approved intent, relationships, governance,
+ownership, delivery state, and traceability. Git, IaC, design tools, trackers,
+and runtime systems remain authoritative for executable/live artefacts. Vault
+records preserve durable authority links, revisions, owners, and last
+verification dates.
+
+`scripts/project_health.py` parses the record frontmatter and validates IDs,
+locations, states, required metadata, project scope, reciprocal links,
+freshness, evidence gates, releases, and closure. It uses only the Python
+standard library and is integrated into the general health and commit checks.
 
 ## Navigation
 
@@ -112,7 +133,7 @@ Do not edit `.agents/skills/` or `.claude/skills/` directly.
 | `reports/design/` | Offline HTML design kits and assets |
 | `rules/shared/` | Canonical agent rules |
 | `skills/shared/` | Canonical task procedures |
-| `scripts/` | Health, validation, adapter synchronisation, and PDF export |
+| `scripts/` | Vault/project health, validation, adapter synchronisation, and PDF export |
 | `tests/` | Safety and integrity tests |
 
 ## Hard invariants
@@ -125,6 +146,8 @@ The root `AGENTS.md` carries the rules that every supported agent must see:
 4. Date every fact and cite sources in answers.
 5. Process out of `inbox/`; never file into it.
 6. Run the vault health check after touching library, memory, or navigation.
+7. Never mark technical work verified or closed without linked authority and
+   evidence.
 
 These invariants matter more than any individual workflow or agent
 integration.
@@ -135,6 +158,7 @@ The project uses local, standard-library checks:
 
 ```bash
 python3 scripts/health.py
+python3 scripts/project_health.py --strict
 python3 scripts/validate_commit.py
 python3 -m unittest discover -s tests
 ./scripts/sync-agent-adapters.sh --check

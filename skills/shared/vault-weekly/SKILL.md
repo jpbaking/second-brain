@@ -21,10 +21,15 @@ vault trustworthy.
    landing next week.
 4. **Projects.** RAG changes this week, milestones landing next week, risks
    without owners, and status logs stale 30 days or more ("status unknown").
+   For technical projects, run the project-health view and include baseline
+   movement; unowned or blocked work; requirement/design coverage; stale
+   asset, infrastructure, or UI/UX authority; open RAID; release gates; and
+   outcomes awaiting verification.
 5. **Decisions.** Decision pages whose `revisit by` date is near or past.
 6. **Hygiene.** Run `python3 scripts/health.py`, resolve the mechanical
-   issues, then list the `⚠` markers still unresolved and ask about the
-   oldest.
+   issues (including technical identity and traceability), then list the `⚠`
+   markers and judgement-level authority/approval conflicts still unresolved
+   and ask about the oldest.
 7. **Look ahead.** Next week's dated items across all areas.
 8. Deliver as a chat brief under `Done this week / Slipped / Nudge list /
    Next week / Questions for you`. Offer to save it as a written weekly

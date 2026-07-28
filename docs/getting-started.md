@@ -108,6 +108,9 @@ the judgement calls a script cannot make.
 ## Next steps
 
 - Read the [user guide](user-guide.md) for common workflows and prompts.
+- Use the [technical project-management guide](technical-project-management.md)
+  to initialise a project, map systems/infrastructure and UI/UX, govern
+  requirements/designs, assess releases, and close with evidence.
 - Read [architecture](architecture.md) to understand the storage model and
   portable agent adapters.
 - Review the [report design kits](../reports/design/README.md) before building

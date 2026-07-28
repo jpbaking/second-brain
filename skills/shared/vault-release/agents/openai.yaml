@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan and Govern Release"
+  short_description: "Manage readiness, rollout, rollback, and proof"
+  default_prompt: "Use $vault-release to plan or assess this release from readiness through verification."

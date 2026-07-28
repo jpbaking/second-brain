@@ -8,6 +8,10 @@ forget. Your AI agent organises them into durable working memory, then uses
 that memory to brief you, answer questions with citations, prepare meetings,
 track commitments, and produce polished reports.
 
+For technical delivery, it can also become the control plane connecting
+project scope, requirements, systems and infrastructure, technical and UI/UX
+design, work, RAID, decisions, releases, and verification evidence.
+
 It is built for people whose work depends on context: engineering leaders,
 architects, managers, consultants, founders, and anyone juggling projects,
 people, decisions, and follow-ups.
@@ -27,6 +31,7 @@ to the agent already helping you work.
 | Meetings and conversations | Minutes, decisions, actions, and follow-ups |
 | Questions about past work | Answers linked to the recorded evidence |
 | Projects and people context | Briefings, status views, and preparation packs |
+| Fragmented technical delivery artefacts | One traceable project, system, requirement, design, risk, and release graph |
 | Repeated report requests | Reusable reports that retain your formatting feedback |
 
 The result is plain Markdown, HTML, and original files on disk. There is no
@@ -80,6 +85,8 @@ raw input      untouched originals         dated, cited synthesis
 - Capture minutes once and fan out the consequences to project pages, people
   dossiers, decisions, and reminders.
 - Review a project or a whole portfolio with evidence-backed status and risks.
+- Plan and govern technical projects from charter through requirements,
+  system/infra and UI/UX design, release, operational handover, and closure.
 - Draft performance evaluations and interview debriefs from recorded evidence,
   with gaps called out rather than papered over.
 - Turn a brag log into CV-ready achievements.
@@ -107,6 +114,9 @@ setup and first-vault walkthrough.
   the first capture, recall, and health check.
 - [User guide](docs/user-guide.md) — daily workflows, available skills,
   reports, maintenance, and good prompts.
+- [Technical project management](docs/technical-project-management.md) —
+  project lifecycle, system/infra and UI/UX source of truth, traceability, and
+  release governance.
 - [Architecture](docs/architecture.md) — storage layers, safety invariants,
   repository layout, and agent portability.
 - [Report design kits](reports/design/README.md) — offline HTML themes and

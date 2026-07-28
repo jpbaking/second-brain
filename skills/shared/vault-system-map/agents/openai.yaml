@@ -1,0 +1,4 @@
+interface:
+  display_name: "Map Systems and Infrastructure"
+  short_description: "Map technical assets, interfaces, and ownership"
+  default_prompt: "Use $vault-system-map to build or update the system and infrastructure source of truth."

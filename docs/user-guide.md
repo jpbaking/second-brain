@@ -108,6 +108,28 @@ derived from dated evidence, with movement, risks, dependencies, and asks.
 Stale information is reported as stale or unknown rather than carried forward
 as current green status.
 
+### Run full technical project management
+
+The vault can act as the control plane for product, systems, infrastructure,
+data, security, and UI/UX delivery. Stable project, asset, requirement,
+design, work, RAID, and release records connect approved intent to evidence.
+
+Use:
+
+- `vault-project-plan` to charter, plan, baseline, or rebaseline;
+- `vault-project-update` to reconcile progress and changes across registers;
+- `vault-requirements` for acceptance, non-functional requirements, coverage,
+  and change control;
+- `vault-system-map` for systems, services, APIs, data, infrastructure,
+  environments, ownership, interfaces, and UI surfaces;
+- `vault-design` for technical, infrastructure, security, UI, and UX design;
+- `vault-release` for readiness, go/no-go, rollout, rollback, and verification;
+- `vault-project-close` for outcomes, operational handover, residual
+  obligations, lessons, and closure.
+
+See the [technical project-management guide](technical-project-management.md)
+for the complete lifecycle and prompt examples.
+
 ### Work with people evidence
 
 People dossiers collect dated goals, accomplishments, feedback, follow-ups,
@@ -175,6 +197,13 @@ You may describe the task naturally or say "use the `<skill-name>` skill".
 | `vault-one-on-one` | Prepare for or capture a 1:1 |
 | `vault-decision` | Record or retrieve an ADR-style decision |
 | `vault-project-status` | Report one-project or portfolio status |
+| `vault-project-plan` | Charter, plan, baseline, or rebaseline technical delivery |
+| `vault-project-update` | Reconcile delivery evidence across all technical registers |
+| `vault-requirements` | Capture, approve, change, trace, and verify requirements |
+| `vault-system-map` | Map systems, infrastructure, interfaces, environments, and UI surfaces |
+| `vault-design` | Create or review technical, infrastructure, security, UI, or UX design |
+| `vault-release` | Govern readiness, rollout, rollback, and post-release evidence |
+| `vault-project-close` | Audit outcomes, handover, residual obligations, and closure |
 | `vault-brief` | Produce a concise attention brief |
 | `vault-weekly` | Run the weekly review and sweep |
 | `vault-handoff` | Prepare absence and return handoffs |
@@ -195,11 +224,14 @@ Run these from the repository root:
 
 ```bash
 python3 scripts/health.py
+python3 scripts/project_health.py --strict
 ./scripts/sync-agent-adapters.sh --check
 python3 -m unittest discover -s tests
 ```
 
 - `health.py` verifies vault structure and flags time-sensitive items.
+- `project_health.py` validates technical record identity, lifecycle,
+  traceability, authority freshness, evidence, release, and closure gates.
 - `sync-agent-adapters.sh --check` confirms all agent adapters match the
   canonical skills.
 - The unit tests exercise the safeguards around original files and append-only

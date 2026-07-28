@@ -10,6 +10,8 @@ Stdlib only. Always exits 0 (it reports; it doesn't gate)."""
 
 import datetime
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -223,6 +225,24 @@ if marked:
         print(f"  - {rel}")
 else:
     ok("no pending ⚠ markers")
+
+# --- Technical project truth -------------------------------------------------
+project_health = subprocess.run(
+    [
+        sys.executable,
+        str(ROOT / "scripts" / "project_health.py"),
+        "--root",
+        str(ROOT),
+        "--strict",
+    ],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+)
+print()
+print(project_health.stdout.rstrip())
+if project_health.returncode:
+    flag("technical project source-of-truth validation failed")
 
 # --- Summary -----------------------------------------------------------------
 section("Summary")
