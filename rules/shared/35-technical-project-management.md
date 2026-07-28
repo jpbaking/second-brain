@@ -54,12 +54,20 @@ authority: vault | external
 authority-ref: relative link, durable external identifier, or "chat YYYY-MM-DD"
 verified: YYYY-MM-DD
 tags: []
+kind: allowed-kind
 ---
 ```
 
 - `id` never changes, even if the title or filename changes.
 - `updated` is the latest dated material change.
 - `verified` advances only when checked against the authoritative source.
+- `date` and `updated` cannot be in the future. An evidence-asserting state
+  such as `verified` or `closed` cannot rely on verification older than its
+  latest material update.
+- `tags` is an inline list. `priority` is `unassigned`, MoSCoW, or
+  critical/high/medium/low. `due` is an ISO date, `none`, or `unknown`.
+  A release `window` is `YYYY-MM-DDTHH:MMZ`; planned releases may use `none`
+  or `unknown`, but ready and later states require a concrete window.
 - Use `unassigned`, `unknown`, or `none` explicitly; never invent a value to
   satisfy a field.
 - Frontmatter is current machine-readable state. Preserve prior state in the
@@ -129,6 +137,10 @@ record in the same task.
 Do not mark a requirement, design, work item, release, or project verified or
 closed while its mandatory downstream evidence or residual obligations are
 missing. Use `unknown` and open a gap rather than manufacturing traceability.
+For implemented or verified requirements and designs, linked implementation
+work must be done or verified at the corresponding gate. Ready and later
+releases cannot carry unfinished included work, incomplete requirements, or
+unapproved designs.
 
 ## Baselines and change control
 
